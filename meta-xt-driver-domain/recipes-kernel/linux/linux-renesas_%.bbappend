@@ -167,6 +167,10 @@ SRC_URI_append_h3ulcb-4x2g-ab-xt = " \
     file://ulcb-ab.dtsi;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
 
+SRC_URI_append_h3ulcb-4x2g-ab-xt = " \
+    file://0001-xen-Initial-version-of-Xen-passthrough-helper-driver.patch \
+"
+
 KERNEL_DEVICETREE_h3ulcb-4x2g-ab-xt = " \
     renesas/r8a7795-h3ulcb-4x2g-ab-dom0.dtb \
     renesas/r8a7795-h3ulcb-4x2g-ab-domd.dtb \
