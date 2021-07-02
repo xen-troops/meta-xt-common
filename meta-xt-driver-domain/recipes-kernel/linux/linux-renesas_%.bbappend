@@ -21,6 +21,22 @@ SRC_URI_append_rcar = " \
     file://xen-chosen.dtsi;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
 
+SRC_URI_append_rcar = " \
+    file://0001-Added-rgvc-driver.patch \
+    file://0002-Clocks-for-cr7-removed-removed-clocks-from-modules-t.patch \
+    file://0003-0006-Clocks-for-cr7-resource-removed.patch.patch \
+    file://0004-renamed-driver-to-rcar-du.patch \
+    file://0005-rcar-soc-Remove-Cortex-R7-power-domain.patch \
+    file://0006-rvgc-report-that-driver-supports-async-probe.patch \
+    file://0007-remoteproc-allow-calling-rproc_fw_boot-without-firmw.patch \
+    file://0008-xen_rproc-add-initial-version-of-Xen-rproc-driver.patch \
+    file://0009-xen_rproc-add-support-for-Xen-based-rproc-management.patch \
+    file://0010-rproc-try-to-acquire-reserved-DMA-region.patch \
+    file://0011-rvgc-add-plane_state-parameter-to-rvgc_pipe_enable.patch \
+    file://0012-Added-patch-for-virtio-Virtio-now-supports-dma-buffe.patch \
+    file://0013-rvgc-provide-vblank-callback-for-a-new-API.patch \
+"
+
 KERNEL_DEVICETREE_append_rcar = " \
     renesas/salvator-generic-doma.dtb \
     renesas/salvator-generic-domu.dtb \

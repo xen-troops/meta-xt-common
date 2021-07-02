@@ -1,0 +1,25 @@
+From edc5e31b6821aa7e2e40d584dd9a1da7e73f95fe Mon Sep 17 00:00:00 2001
+From: jon brabender <jon.brabender@renesas.com>
+Date: Wed, 17 Jun 2020 00:33:28 +0000
+Subject: [PATCH 4/4] renamed driver to rcar-du
+
+---
+ drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c
+index 7d6aa31b7a6e..5c7a0297fac0 100644
+--- a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c
++++ b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c
+@@ -29,7 +29,7 @@
+ #include <linux/of_reserved_mem.h>
+ #include "r_taurus_rvgc_protocol.h"
+ 
+-#define RCAR_RVGC_DRM_NAME     "rcar-rvgc"
++#define RCAR_RVGC_DRM_NAME     "rcar-du"
+ 
+ 
+ /* -----------------------------------------------------------------------------
+-- 
+2.17.1
+

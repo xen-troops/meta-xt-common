@@ -1,0 +1,301 @@
+From fc2c713db0d3898825e046d3f43b4aef58cee2d6 Mon Sep 17 00:00:00 2001
+From: Sven <sven.grundmann@renesas.com>
+Date: Fri, 6 Mar 2020 18:57:12 +0100
+Subject: [PATCH] Added patch for virtio Virtio now supports dma buffers
+
+I am not sure if this is really necessary and it has to be checked
+if this patch could be removed
+---
+ drivers/rpmsg/virtio_rpmsg_bus.c | 29 +++++++----
+ drivers/virtio/virtio.c          |  1 +
+ drivers/virtio/virtio_ring.c     | 82 +++++++++++++++++++++++++-------
+ include/linux/virtio.h           | 10 ++++
+ 4 files changed, 94 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
+index 7d7ed4e5cce7..e6affdff32a5 100644
+--- a/drivers/rpmsg/virtio_rpmsg_bus.c
++++ b/drivers/rpmsg/virtio_rpmsg_bus.c
+@@ -192,8 +192,16 @@ static const struct rpmsg_endpoint_ops virtio_endpoint_ops = {
+ 	.trysend_offchannel = virtio_rpmsg_trysend_offchannel,
+ };
+ 
++static inline dma_addr_t msg_dma_address(struct virtproc_info *vrp, void *msg)
++{
++	unsigned long offset = msg - vrp->rbufs;
++
++	return vrp->bufs_dma + offset;
++}
++
+ /**
+  * rpmsg_sg_init - initialize scatterlist according to cpu address location
++ * @vrp: virtual remote processor state
+  * @sg: scatterlist to fill
+  * @cpu_addr: virtual address of the buffer
+  * @len: buffer length
+@@ -202,12 +210,13 @@ static const struct rpmsg_endpoint_ops virtio_endpoint_ops = {
+  * location (in vmalloc or in kernel).
+  */
+ static void
+-rpmsg_sg_init(struct scatterlist *sg, void *cpu_addr, unsigned int len)
++rpmsg_sg_init(struct virtproc_info *vrp, struct scatterlist *sg,
++	      void *cpu_addr, unsigned int len)
+ {
+ 	if (is_vmalloc_addr(cpu_addr)) {
+ 		sg_init_table(sg, 1);
+-		sg_set_page(sg, vmalloc_to_page(cpu_addr), len,
+-			    offset_in_page(cpu_addr));
++		sg_dma_address(sg) = msg_dma_address(vrp, cpu_addr);
++		sg_dma_len(sg) = len;
+ 	} else {
+ 		WARN_ON(!virt_addr_valid(cpu_addr));
+ 		sg_init_one(sg, cpu_addr, len);
+@@ -632,12 +641,12 @@ static int rpmsg_send_offchannel_raw(struct rpmsg_device *rpdev,
+ 			 msg, sizeof(*msg) + len, true);
+ #endif
+ 
+-	rpmsg_sg_init(&sg, msg, sizeof(*msg) + len);
++	rpmsg_sg_init(vrp, &sg, msg, sizeof(*msg) + len);
+ 
+ 	mutex_lock(&vrp->tx_lock);
+ 
+ 	/* add message to the remote processor's virtqueue */
+-	err = virtqueue_add_outbuf(vrp->svq, &sg, 1, msg, GFP_KERNEL);
++	err = dma_virtqueue_add_outbuf(vrp->svq, &sg, 1, msg, GFP_KERNEL);
+ 	if (err) {
+ 		/*
+ 		 * need to reclaim the buffer here, otherwise it's lost
+@@ -760,10 +769,10 @@ static int rpmsg_recv_single(struct virtproc_info *vrp, struct device *dev,
+ 		dev_warn(dev, "msg received with no recipient\n");
+ 
+ 	/* publish the real size of the buffer */
+-	rpmsg_sg_init(&sg, msg, vrp->buf_size);
++	rpmsg_sg_init(vrp, &sg, msg, vrp->buf_size);
+ 
+ 	/* add the buffer back to the remote processor's virtqueue */
+-	err = virtqueue_add_inbuf(vrp->rvq, &sg, 1, msg, GFP_KERNEL);
++	err = dma_virtqueue_add_inbuf(vrp->rvq, &sg, 1, msg, GFP_KERNEL);
+ 	if (err < 0) {
+ 		dev_err(dev, "failed to add a virtqueue buffer: %d\n", err);
+ 		return err;
+@@ -944,10 +953,10 @@ static int rpmsg_probe(struct virtio_device *vdev)
+ 		struct scatterlist sg;
+ 		void *cpu_addr = vrp->rbufs + i * vrp->buf_size;
+ 
+-		rpmsg_sg_init(&sg, cpu_addr, vrp->buf_size);
++		rpmsg_sg_init(vrp, &sg, cpu_addr, vrp->buf_size);
+ 
+-		err = virtqueue_add_inbuf(vrp->rvq, &sg, 1, cpu_addr,
+-					  GFP_KERNEL);
++		err = dma_virtqueue_add_inbuf(vrp->rvq, &sg, 1, cpu_addr,
++					      GFP_KERNEL);
+ 		WARN_ON(err); /* sanity check; this can't really happen */
+ 	}
+ 
+diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+index 42e09cc1b8ac..72c1162f808a 100644
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -264,6 +264,7 @@ static int virtio_dev_probe(struct device *_d)
+ 	if (err)
+ 		goto err;
+ 
++
+ 	/* If probe didn't do it, mark device DRIVER_OK ourselves. */
+ 	if (!(dev->config->get_status(dev) & VIRTIO_CONFIG_S_DRIVER_OK))
+ 		virtio_device_ready(dev);
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index becc77697960..c7ab90b709cc 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -412,6 +412,35 @@ static struct vring_desc *alloc_indirect_split(struct virtqueue *_vq,
+ 	return desc;
+ }
+ 
++
++static inline int vring_desc_set(struct virtqueue *_vq,
++				 struct vring_desc *desc,
++				 struct scatterlist *sg,
++				 unsigned int flags,
++				 enum dma_data_direction direction,
++				 bool dma)
++{
++	int ret = 0;
++	struct vring_virtqueue *vq = to_vvq(_vq);
++	dma_addr_t addr;
++
++	if (dma) {
++		addr = sg_dma_address(sg);
++	} else {
++		addr = vring_map_one_sg(vq, sg, direction);
++		ret = vring_mapping_error(vq, addr);
++		if (ret)
++			return ret;
++	}
++
++	desc->flags = cpu_to_virtio16(_vq->vdev, flags);
++	desc->addr = cpu_to_virtio64(_vq->vdev, addr);
++	desc->len = cpu_to_virtio32(_vq->vdev,
++				    dma ? sg_dma_len(sg) : sg->length);
++
++	return ret;
++}
++
+ static inline int virtqueue_add_split(struct virtqueue *_vq,
+ 				      struct scatterlist *sgs[],
+ 				      unsigned int total_sg,
+@@ -419,7 +448,8 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+ 				      unsigned int in_sgs,
+ 				      void *data,
+ 				      void *ctx,
+-				      gfp_t gfp)
++                      gfp_t gfp,
++                      bool dma)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
+ 	struct scatterlist *sg;
+@@ -444,7 +474,7 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+ 
+ 	head = vq->free_head;
+ 
+-	if (virtqueue_use_indirect(_vq, total_sg))
++	if (!dma && virtqueue_use_indirect(_vq, total_sg))
+ 		desc = alloc_indirect_split(_vq, total_sg, gfp);
+ 	else {
+ 		desc = NULL;
+@@ -480,26 +510,23 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+ 
+ 	for (n = 0; n < out_sgs; n++) {
+ 		for (sg = sgs[n]; sg; sg = sg_next(sg)) {
+-			dma_addr_t addr = vring_map_one_sg(vq, sg, DMA_TO_DEVICE);
+-			if (vring_mapping_error(vq, addr))
++			int ret = vring_desc_set(_vq, desc + i, sg,
++				       VRING_DESC_F_NEXT, DMA_TO_DEVICE, dma);
++			if (ret)
+ 				goto unmap_release;
+ 
+-			desc[i].flags = cpu_to_virtio16(_vq->vdev, VRING_DESC_F_NEXT);
+-			desc[i].addr = cpu_to_virtio64(_vq->vdev, addr);
+-			desc[i].len = cpu_to_virtio32(_vq->vdev, sg->length);
+ 			prev = i;
+ 			i = virtio16_to_cpu(_vq->vdev, desc[i].next);
+ 		}
+ 	}
+ 	for (; n < (out_sgs + in_sgs); n++) {
+ 		for (sg = sgs[n]; sg; sg = sg_next(sg)) {
+-			dma_addr_t addr = vring_map_one_sg(vq, sg, DMA_FROM_DEVICE);
+-			if (vring_mapping_error(vq, addr))
++			int ret = vring_desc_set(_vq, desc + i, sg,
++				       VRING_DESC_F_NEXT | VRING_DESC_F_WRITE,
++				       DMA_FROM_DEVICE, dma);
++			if (ret)
+ 				goto unmap_release;
+ 
+-			desc[i].flags = cpu_to_virtio16(_vq->vdev, VRING_DESC_F_NEXT | VRING_DESC_F_WRITE);
+-			desc[i].addr = cpu_to_virtio64(_vq->vdev, addr);
+-			desc[i].len = cpu_to_virtio32(_vq->vdev, sg->length);
+ 			prev = i;
+ 			i = virtio16_to_cpu(_vq->vdev, desc[i].next);
+ 		}
+@@ -1697,14 +1724,15 @@ static inline int virtqueue_add(struct virtqueue *_vq,
+ 				unsigned int in_sgs,
+ 				void *data,
+ 				void *ctx,
+-				gfp_t gfp)
++				gfp_t gfp,
++				bool dma)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
+ 
+ 	return vq->packed_ring ? virtqueue_add_packed(_vq, sgs, total_sg,
+ 					out_sgs, in_sgs, data, ctx, gfp) :
+ 				 virtqueue_add_split(_vq, sgs, total_sg,
+-					out_sgs, in_sgs, data, ctx, gfp);
++					out_sgs, in_sgs, data, ctx, gfp, dma);
+ }
+ 
+ /**
+@@ -1738,7 +1766,7 @@ int virtqueue_add_sgs(struct virtqueue *_vq,
+ 			total_sg++;
+ 	}
+ 	return virtqueue_add(_vq, sgs, total_sg, out_sgs, in_sgs,
+-			     data, NULL, gfp);
++			     data, NULL, gfp, false);
+ }
+ EXPORT_SYMBOL_GPL(virtqueue_add_sgs);
+ 
+@@ -1760,10 +1788,19 @@ int virtqueue_add_outbuf(struct virtqueue *vq,
+ 			 void *data,
+ 			 gfp_t gfp)
+ {
+-	return virtqueue_add(vq, &sg, num, 1, 0, data, NULL, gfp);
++	return virtqueue_add(vq, &sg, num, 1, 0, data, NULL, gfp, false);
+ }
+ EXPORT_SYMBOL_GPL(virtqueue_add_outbuf);
+ 
++int dma_virtqueue_add_outbuf(struct virtqueue *vq,
++			     struct scatterlist *sg, unsigned int num,
++			     void *data,
++			     gfp_t gfp)
++{
++	return virtqueue_add(vq, &sg, num, 1, 0, data, NULL, gfp, true);
++}
++EXPORT_SYMBOL_GPL(dma_virtqueue_add_outbuf);
++
+ /**
+  * virtqueue_add_inbuf - expose input buffers to other end
+  * @vq: the struct virtqueue we're talking about.
+@@ -1782,10 +1819,19 @@ int virtqueue_add_inbuf(struct virtqueue *vq,
+ 			void *data,
+ 			gfp_t gfp)
+ {
+-	return virtqueue_add(vq, &sg, num, 0, 1, data, NULL, gfp);
++	return virtqueue_add(vq, &sg, num, 0, 1, data, NULL, gfp, false);
+ }
+ EXPORT_SYMBOL_GPL(virtqueue_add_inbuf);
+ 
++int dma_virtqueue_add_inbuf(struct virtqueue *vq,
++			    struct scatterlist *sg, unsigned int num,
++			    void *data,
++			    gfp_t gfp)
++{
++	return virtqueue_add(vq, &sg, num, 0, 1, data, NULL, gfp, true);
++}
++EXPORT_SYMBOL_GPL(dma_virtqueue_add_inbuf);
++
+ /**
+  * virtqueue_add_inbuf_ctx - expose input buffers to other end
+  * @vq: the struct virtqueue we're talking about.
+@@ -1806,7 +1852,7 @@ int virtqueue_add_inbuf_ctx(struct virtqueue *vq,
+ 			void *ctx,
+ 			gfp_t gfp)
+ {
+-	return virtqueue_add(vq, &sg, num, 0, 1, data, ctx, gfp);
++	return virtqueue_add(vq, &sg, num, 0, 1, data, ctx, gfp, false);
+ }
+ EXPORT_SYMBOL_GPL(virtqueue_add_inbuf_ctx);
+ 
+diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+index 55ea329fe72a..4f59313978bf 100644
+--- a/include/linux/virtio.h
++++ b/include/linux/virtio.h
+@@ -34,6 +34,16 @@ struct virtqueue {
+ 	void *priv;
+ };
+ 
++int dma_virtqueue_add_outbuf(struct virtqueue *vq,
++			     struct scatterlist sg[], unsigned int num,
++			     void *data,
++			     gfp_t gfp);
++
++int dma_virtqueue_add_inbuf(struct virtqueue *vq,
++			    struct scatterlist sg[], unsigned int num,
++			    void *data,
++			    gfp_t gfp);
++
+ int virtqueue_add_outbuf(struct virtqueue *vq,
+ 			 struct scatterlist sg[], unsigned int num,
+ 			 void *data,
+-- 
+2.17.1
+

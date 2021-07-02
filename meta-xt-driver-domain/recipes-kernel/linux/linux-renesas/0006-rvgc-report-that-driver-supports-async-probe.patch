@@ -1,0 +1,28 @@
+From bffda8a07581b96135d876bb5a84577bad6f19b8 Mon Sep 17 00:00:00 2001
+From: Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+Date: Mon, 22 Mar 2021 00:29:56 +0200
+Subject: [PATCH 06/13] rvgc: report that driver supports async probe
+
+This will solve problem with lockup caused by probing driver
+in workque context.
+
+Signed-off-by: Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+---
+ drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c
+index 5c7a0297fac0..618da68f83ec 100644
+--- a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c
++++ b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c
+@@ -279,6 +279,7 @@ MODULE_DEVICE_TABLE(rpmsg, taurus_driver_rvgc_id_table);
+ 
+ static struct rpmsg_driver taurus_rvgc_client = {
+ 	.drv.name	= KBUILD_MODNAME,
++	.drv.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+ 	.id_table	= taurus_driver_rvgc_id_table,
+ 	.probe		= rcar_rvgc_probe,
+ 	.callback	= rcar_rvgc_cb,
+-- 
+2.31.0
+

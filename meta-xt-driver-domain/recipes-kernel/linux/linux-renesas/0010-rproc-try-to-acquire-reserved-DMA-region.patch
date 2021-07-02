@@ -1,0 +1,27 @@
+From a1281cb1b98e6a2f36a4a8a56c757d9ba2650786 Mon Sep 17 00:00:00 2001
+From: Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+Date: Wed, 31 Mar 2021 23:24:27 +0300
+Subject: [PATCH 10/13] rproc: try to acquire reserved DMA region
+
+Signed-off-by: Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+---
+ drivers/remoteproc/xen_rproc.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/remoteproc/xen_rproc.c b/drivers/remoteproc/xen_rproc.c
+index 6c47bb09f06f..8e727fa60512 100644
+--- a/drivers/remoteproc/xen_rproc.c
++++ b/drivers/remoteproc/xen_rproc.c
+@@ -218,6 +218,9 @@ static int xen_rproc_probe(struct platform_device *pdev)
+ 		goto free_rproc;
+ 	}
+ 
++	if (of_reserved_mem_device_init(dev))
++		dev_warn(dev, "device does not have specific CMA pool\n");
++
+ 	data->rtable = kmemdup(&xen_rtable, sizeof(struct xen_rproc_rtable), GFP_KERNEL);
+ 	data->rproc = rproc;
+ 
+-- 
+2.31.0
+

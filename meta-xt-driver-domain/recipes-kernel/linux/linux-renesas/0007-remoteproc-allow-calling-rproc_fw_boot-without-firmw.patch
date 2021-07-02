@@ -1,0 +1,60 @@
+From cbe25a3b580cc7eab46434083201a5f51c151ef9 Mon Sep 17 00:00:00 2001
+From: Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+Date: Mon, 22 Mar 2021 00:34:00 +0200
+Subject: [PATCH 7/7] remoteproc: allow calling rproc_fw_boot() without
+ firmware
+
+To support remoteproc devices that are booted by bootloader we
+need to export rproc_fw_boot() and make sure that it can boot
+with fw == NULL.
+
+Now, driver can provide own fw_ops and call rproc_fw_boot()
+directly.
+
+Signed-off-by: Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+---
+ drivers/remoteproc/remoteproc_core.c     | 8 +++++---
+ drivers/remoteproc/remoteproc_internal.h | 1 +
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+index dab2c0f5caf0..2cd1027c889e 100644
+--- a/drivers/remoteproc/remoteproc_core.c
++++ b/drivers/remoteproc/remoteproc_core.c
+@@ -1461,7 +1461,7 @@ static int rproc_attach(struct rproc *rproc)
+ /*
+  * take a firmware and boot a remote processor with it.
+  */
+-static int rproc_fw_boot(struct rproc *rproc, const struct firmware *fw)
++int rproc_fw_boot(struct rproc *rproc, const struct firmware *fw)
+ {
+ 	struct device *dev = &rproc->dev;
+ 	const char *name = rproc->firmware;
+@@ -1471,8 +1471,10 @@ static int rproc_fw_boot(struct rproc *rproc, const struct firmware *fw)
+ 	if (ret)
+ 		return ret;
+ 
+-	dev_info(dev, "Booting fw image %s, size %zd\n", name, fw->size);
+-
++	if (fw)
++		dev_info(dev, "Booting fw image %s, size %zd\n", name, fw->size);
++	else
++		dev_info(dev, "Initialising fw image %s\n", name);
+ 	/*
+ 	 * if enabling an IOMMU isn't relevant for this rproc, this is
+ 	 * just a nop
+diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
+index c34002888d2c..f66c3522beac 100644
+--- a/drivers/remoteproc/remoteproc_internal.h
++++ b/drivers/remoteproc/remoteproc_internal.h
+@@ -28,6 +28,7 @@ struct rproc_debug_trace {
+ void rproc_release(struct kref *kref);
+ irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
+ void rproc_vdev_release(struct kref *ref);
++int rproc_fw_boot(struct rproc *rproc, const struct firmware *fw);
+ int rproc_of_parse_firmware(struct device *dev, int index,
+ 			    const char **fw_name);
+ 
+-- 
+2.17.1
+

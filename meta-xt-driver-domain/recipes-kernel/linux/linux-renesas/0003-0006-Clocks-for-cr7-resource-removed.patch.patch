@@ -1,0 +1,49 @@
+From c13bedb56081670a769f2f358c59ee09cc09dc9b Mon Sep 17 00:00:00 2001
+From: Unknown Author <someone@renesas.com>
+Date: Tue, 16 Mar 2021 19:24:07 +0200
+Subject: [PATCH 3/4] 0006-Clocks-for-cr7-resource-removed.patch
+
+---
+ drivers/clk/renesas/r8a7796-cpg-mssr.c |  4 ++--
+ drivers/soc/renesas/rcar-sysc.c        | 10 ++++++++++
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/clk/renesas/r8a7796-cpg-mssr.c b/drivers/clk/renesas/r8a7796-cpg-mssr.c
+index 1fc2e659372e..74c9d49ba047 100644
+--- a/drivers/clk/renesas/r8a7796-cpg-mssr.c
++++ b/drivers/clk/renesas/r8a7796-cpg-mssr.c
+@@ -217,8 +217,8 @@ static struct mssr_mod_clk r8a7796_mod_clks[] __initdata = {
+ 	DEF_MOD("vin1",			 810,	R8A7796_CLK_S0D2),
+ 	DEF_MOD("vin0",			 811,	R8A7796_CLK_S0D2),
+ 	DEF_MOD("etheravb",		 812,	R8A7796_CLK_S0D6),
+-	DEF_MOD("imr1",			 822,	R8A7796_CLK_S0D2),
+-	DEF_MOD("imr0",			 823,	R8A7796_CLK_S0D2),
++/*	DEF_MOD("imr1",			 822,	R8A7796_CLK_S0D2), */
++/*	DEF_MOD("imr0",			 823,	R8A7796_CLK_S0D2), */
+ 	DEF_MOD("imp",			 824,	R8A7796_CLK_S1D1),
+ 	DEF_MOD("gpio7",		 905,	R8A7796_CLK_S3D4),
+ 	DEF_MOD("gpio6",		 906,	R8A7796_CLK_S3D4),
+diff --git a/drivers/soc/renesas/rcar-sysc.c b/drivers/soc/renesas/rcar-sysc.c
+index 5a8e22a25cd0..66a5a3aacb31 100644
+--- a/drivers/soc/renesas/rcar-sysc.c
++++ b/drivers/soc/renesas/rcar-sysc.c
+@@ -133,6 +133,16 @@ static int rcar_sysc_pwr_on_off(const struct rcar_sysc_ch *sysc_ch, bool on)
+ 	unsigned int sr_bit, reg_offs;
+ 	int k;
+ 
++	/* Ensure we do *not* turn off the Cortex-R7 */
++	/* All R-Car SoCs have the Cortex-R7 PWRSR reg at a fixed address */
++	if (sysc_ch->chan_offs == 0x240)
++		return 0;
++
++	/* Ensure we do *not* turn off the IMR (A3VC) */
++	/* All R-Car SoCs have the IMR PWRSR reg at a fixed address PWRSR9 */
++	if (sysc_ch->chan_offs == 0x380)
++		return 0;
++
+ 	if (on) {
+ 		sr_bit = SYSCSR_PONENB;
+ 		reg_offs = PWRONCR_OFFS;
+-- 
+2.17.1
+

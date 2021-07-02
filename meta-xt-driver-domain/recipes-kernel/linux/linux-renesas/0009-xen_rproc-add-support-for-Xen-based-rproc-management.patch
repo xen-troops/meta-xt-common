@@ -1,0 +1,195 @@
+From 747e26ce80e7a84ce8c420d9a6af4b8f6c2887e4 Mon Sep 17 00:00:00 2001
+From: Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+Date: Fri, 26 Mar 2021 01:03:31 +0200
+Subject: [PATCH 09/13] xen_rproc: add support for Xen-based rproc management
+
+We support only one VDEV, configuration for which we are reading from
+Xen using HVC.
+
+In the same way we are setting vring addresses using another HVC.
+
+Signed-off-by: Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+---
+ drivers/remoteproc/xen_rproc.c | 111 ++++++++++++++++++++-------------
+ 1 file changed, 68 insertions(+), 43 deletions(-)
+
+diff --git a/drivers/remoteproc/xen_rproc.c b/drivers/remoteproc/xen_rproc.c
+index 0aaed95e7dcf..6c47bb09f06f 100644
+--- a/drivers/remoteproc/xen_rproc.c
++++ b/drivers/remoteproc/xen_rproc.c
+@@ -31,10 +31,42 @@
+ #define MFIS_SMC_ERR_BUSY               0x01
+ #define MFIS_SMC_ERR_NOT_AVAILABLE      0x02
+ 
++#define RPMSG_SMC_GET_VDEV_INFO  ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, \
++                                                    ARM_SMCCC_SMC_32,  \
++                                                    ARM_SMCCC_OWNER_SIP, \
++                                                    0x200)
++#define RPMSG_SMC_GET_VRING_INFO  ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, \
++                                                     ARM_SMCCC_SMC_32, \
++                                                     ARM_SMCCC_OWNER_SIP, \
++                                                     0x201)
++#define RPMSG_SMC_SET_VRING_DATA  ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, \
++                                                     ARM_SMCCC_SMC_32, \
++                                                     ARM_SMCCC_OWNER_SIP, \
++                                                     0x202)
++
++/* We define minimal table with one resource: virtqueue device, which has 2 rings */
++struct xen_rproc_rtable {
++	struct resource_table tbl_header;
++	u32 offset;
++	struct fw_rsc_hdr r_hdr;
++	struct fw_rsc_vdev vdev;
++	struct fw_rsc_vdev_vring vrings[2];
++};
++
++/* Fill the table */
++/* TODO: Make table part of struct xen_rproc_data */
++static struct xen_rproc_rtable xen_rtable = {
++	.tbl_header.ver = 1,
++	.tbl_header.num = 1,
++	.offset = offsetof(struct xen_rproc_rtable, r_hdr),
++	.r_hdr.type = RSC_VDEV,
++	.vdev.num_of_vrings = 2,
++};
++
+ struct xen_rproc_data {
+-	void __iomem *rtable;
+ 	struct rproc *rproc;
+ 	struct work_struct workqueue;
++	struct xen_rproc_rtable *rtable;
+ };
+ 
+ static void handle_event(struct work_struct *work)
+@@ -75,8 +107,18 @@ static void xen_rproc_kick(struct rproc *rproc, int vqid)
+ 
+ static int xen_rproc_start(struct rproc *rproc)
+ {
+-	/* Xen Will boot it for us */
++	struct xen_rproc_data *data = rproc->priv;
++	struct arm_smccc_res res;
+ 
++	pr_info("boot: vring: %x %d", data->rtable->vrings[0].da,
++		data->rtable->vrings[0].notifyid);
++	pr_info("boot: vring: %x %d", data->rtable->vrings[1].da,
++		data->rtable->vrings[1].notifyid);
++	/* Set ring 1 first, because ring 2 will unlock remote end */
++	arm_smccc_1_1_hvc(RPMSG_SMC_SET_VRING_DATA, 1, data->rtable->vrings[1].da,
++			  data->rtable->vrings[1].notifyid, &res);
++	arm_smccc_1_1_hvc(RPMSG_SMC_SET_VRING_DATA, 0, data->rtable->vrings[0].da,
++			  data->rtable->vrings[0].notifyid, &res);
+ 	return 0;
+ }
+ 
+@@ -93,41 +135,12 @@ static const struct rproc_ops xen_rproc_ops = {
+ 	.stop		= xen_rproc_stop,
+ };
+ 
+-static const uint8_t xen_rtable[]  __aligned(__alignof__(uint64_t)) = {
+-	0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x50, 0x00, 0x00, 0x00, 0x88, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x70,
+-	0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0x07,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x63, 0x61, 0x72, 0x76, 0x65, 0x6f, 0x75, 0x74,
+-	0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x03, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x10, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00,
+-	0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00,
+-	0x00, 0x02, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+-	0x00, 0x00, 0x00, 0x00,
+-};
+-
+ struct resource_table *xen_rproc_find_rsc_table(struct rproc *rproc,
+ 						const struct firmware *fw,
+ 						int *tablesz)
+ {
+ 	*tablesz = sizeof(xen_rtable);
+-	return (void*)xen_rtable;
++	return (void*)&xen_rtable;
+ }
+ 
+ static struct resource_table *
+@@ -135,7 +148,7 @@ xen_rproc_find_loaded_rsc_table(struct rproc *rproc, const struct firmware *fw)
+ {
+ 	struct xen_rproc_data *data = rproc->priv;
+ 
+-	return data->rtable;
++	return (void*)data->rtable;
+ }
+ 
+ static int xen_rproc_load_fw(struct rproc *rproc, const struct firmware *fw)
+@@ -158,13 +171,9 @@ static int xen_rproc_probe(struct platform_device *pdev)
+ 	struct rproc *rproc;
+ 	struct resource *resource;
+ 	struct xen_rproc_data *data;
++	struct arm_smccc_res res;
+ 	int ret;
+-
+-	resource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!resource) {
+-		dev_err(dev, "Can't get iomem resource\n");
+-		return -EINVAL;
+-	}
++	int i;
+ 
+ 	rproc = rproc_alloc(dev, np->name, &xen_rproc_ops, NULL,
+ 			    sizeof(struct xen_rproc_data));
+@@ -172,13 +181,28 @@ static int xen_rproc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	data = rproc->priv;
+-	data->rtable = devm_ioremap_resource(dev, resource);
+-	if (IS_ERR(data->rtable)) {
+-		ret = PTR_ERR(data->rtable);
+-		dev_err(dev, "devm_ioremap_resource failed: %d\n", ret);
++
++	/* Fill resource table */
++	arm_smccc_1_1_hvc(RPMSG_SMC_GET_VDEV_INFO, &res);
++	if (res.a0 != 0) {
++		ret = -ENODEV;
+ 		goto free_rproc;
+ 	}
+ 
++	xen_rtable.vdev.id = res.a1;
++	xen_rtable.vdev.dfeatures = res.a2;
++
++	for (i = 0; i < 2; i ++) {
++		arm_smccc_1_1_hvc(RPMSG_SMC_GET_VRING_INFO, i, &res);
++		if (res.a0 != 0) {
++			ret = -ENODEV;
++			goto free_rproc;
++		}
++		xen_rtable.vrings[i].align = res.a1;
++		xen_rtable.vrings[i].num = res.a2;
++		xen_rtable.vrings[i].notifyid = res.a3;
++	}
++
+ 	/* Get IRQ resource */
+ 	resource = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+ 	if (!resource) {
+@@ -194,6 +218,7 @@ static int xen_rproc_probe(struct platform_device *pdev)
+ 		goto free_rproc;
+ 	}
+ 
++	data->rtable = kmemdup(&xen_rtable, sizeof(struct xen_rproc_rtable), GFP_KERNEL);
+ 	data->rproc = rproc;
+ 
+ 	INIT_WORK(&data->workqueue, handle_event);
+-- 
+2.31.0
+

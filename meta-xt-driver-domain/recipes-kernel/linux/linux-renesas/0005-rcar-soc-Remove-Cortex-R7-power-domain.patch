@@ -1,0 +1,91 @@
+From bfdd5d9150edb62357965e59d19897c6be7a216c Mon Sep 17 00:00:00 2001
+From: Phil Edworthy <phil.edworthy@renesas.com>
+Date: Fri, 30 Oct 2020 12:04:12 +0000
+Subject: [PATCH 05/13] rcar soc: Remove Cortex-R7 power domain
+
+When using the Cortex-R7 core before Linux is started, we need to make
+sure Linux does not turn off the CR7 power domain.
+---
+ drivers/soc/renesas/r8a7795-sysc.c  | 1 -
+ drivers/soc/renesas/r8a7796-sysc.c  | 1 -
+ drivers/soc/renesas/r8a77965-sysc.c | 1 -
+ drivers/soc/renesas/r8a77980-sysc.c | 1 -
+ drivers/soc/renesas/r8a77990-sysc.c | 7 +++----
+ 5 files changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/soc/renesas/r8a7795-sysc.c b/drivers/soc/renesas/r8a7795-sysc.c
+index aac1053e2ab5..fccb83f2514f 100644
+--- a/drivers/soc/renesas/r8a7795-sysc.c
++++ b/drivers/soc/renesas/r8a7795-sysc.c
+@@ -40,7 +40,6 @@ static struct rcar_sysc_area r8a7795_areas[] __initdata = {
+ 	{ "ca53-cpu3",	0x200, 3, R8A7795_PD_CA53_CPU3,	R8A7795_PD_CA53_SCU,
+ 	  PD_CPU_NOCR },
+ 	{ "a3vp",	0x340, 0, R8A7795_PD_A3VP,	R8A7795_PD_ALWAYS_ON },
+-	{ "cr7",	0x240, 0, R8A7795_PD_CR7,	R8A7795_PD_ALWAYS_ON },
+ 	{ "a3vc",	0x380, 0, R8A7795_PD_A3VC,	R8A7795_PD_ALWAYS_ON },
+ 	/* A2VC0 exists on ES1.x only */
+ 	{ "a2vc0",	0x3c0, 0, R8A7795_PD_A2VC0,	R8A7795_PD_A3VC },
+diff --git a/drivers/soc/renesas/r8a7796-sysc.c b/drivers/soc/renesas/r8a7796-sysc.c
+index 110790152d89..f6916a2c7a33 100644
+--- a/drivers/soc/renesas/r8a7796-sysc.c
++++ b/drivers/soc/renesas/r8a7796-sysc.c
+@@ -36,7 +36,6 @@ static struct rcar_sysc_area r8a7796_areas[] __initdata = {
+ 	  PD_CPU_NOCR },
+ 	{ "ca53-cpu3",	0x200, 3, R8A7796_PD_CA53_CPU3,	R8A7796_PD_CA53_SCU,
+ 	  PD_CPU_NOCR },
+-	{ "cr7",	0x240, 0, R8A7796_PD_CR7,	R8A7796_PD_ALWAYS_ON },
+ 	{ "a3vc",	0x380, 0, R8A7796_PD_A3VC,	R8A7796_PD_ALWAYS_ON },
+ 	{ "a2vc0",	0x3c0, 0, R8A7796_PD_A2VC0,	R8A7796_PD_A3VC },
+ 	{ "a2vc1",	0x3c0, 1, R8A7796_PD_A2VC1,	R8A7796_PD_A3VC },
+diff --git a/drivers/soc/renesas/r8a77965-sysc.c b/drivers/soc/renesas/r8a77965-sysc.c
+index 035f1acc4500..4d9ecd27bd39 100644
+--- a/drivers/soc/renesas/r8a77965-sysc.c
++++ b/drivers/soc/renesas/r8a77965-sysc.c
+@@ -23,7 +23,6 @@ static const struct rcar_sysc_area r8a77965_areas[] __initconst = {
+ 	  PD_CPU_NOCR },
+ 	{ "ca57-cpu1",	 0x80, 1, R8A77965_PD_CA57_CPU1, R8A77965_PD_CA57_SCU,
+ 	  PD_CPU_NOCR },
+-	{ "cr7",	0x240, 0, R8A77965_PD_CR7,	R8A77965_PD_ALWAYS_ON },
+ 	{ "a3vc",	0x380, 0, R8A77965_PD_A3VC,	R8A77965_PD_ALWAYS_ON },
+ 	{ "a3vp",	0x340, 0, R8A77965_PD_A3VP,	R8A77965_PD_ALWAYS_ON },
+ 	{ "a2vc1",	0x3c0, 1, R8A77965_PD_A2VC1,	R8A77965_PD_A3VC },
+diff --git a/drivers/soc/renesas/r8a77980-sysc.c b/drivers/soc/renesas/r8a77980-sysc.c
+index 9265fb525ef3..2d2cbd135c29 100644
+--- a/drivers/soc/renesas/r8a77980-sysc.c
++++ b/drivers/soc/renesas/r8a77980-sysc.c
+@@ -25,7 +25,6 @@ static const struct rcar_sysc_area r8a77980_areas[] __initconst = {
+ 	  PD_CPU_NOCR },
+ 	{ "ca53-cpu3",	0x200, 3, R8A77980_PD_CA53_CPU3, R8A77980_PD_CA53_SCU,
+ 	  PD_CPU_NOCR },
+-	{ "cr7",	0x240, 0, R8A77980_PD_CR7,	R8A77980_PD_ALWAYS_ON },
+ 	{ "a3ir",	0x180, 0, R8A77980_PD_A3IR,	R8A77980_PD_ALWAYS_ON },
+ 	{ "a2ir0",	0x400, 0, R8A77980_PD_A2IR0,	R8A77980_PD_A3IR },
+ 	{ "a2ir1",	0x400, 1, R8A77980_PD_A2IR1,	R8A77980_PD_A3IR },
+diff --git a/drivers/soc/renesas/r8a77990-sysc.c b/drivers/soc/renesas/r8a77990-sysc.c
+index 8ea8ae0d42c2..da6e79ac94ea 100644
+--- a/drivers/soc/renesas/r8a77990-sysc.c
++++ b/drivers/soc/renesas/r8a77990-sysc.c
+@@ -22,7 +22,6 @@ static struct rcar_sysc_area r8a77990_areas[] __initdata = {
+ 	  PD_CPU_NOCR },
+ 	{ "ca53-cpu1",	0x200, 1, R8A77990_PD_CA53_CPU1, R8A77990_PD_CA53_SCU,
+ 	  PD_CPU_NOCR },
+-	{ "cr7",	0x240, 0, R8A77990_PD_CR7,	R8A77990_PD_ALWAYS_ON },
+ 	{ "a3vc",	0x380, 0, R8A77990_PD_A3VC,	R8A77990_PD_ALWAYS_ON },
+ 	{ "a2vc1",	0x3c0, 1, R8A77990_PD_A2VC1,	R8A77990_PD_A3VC },
+ 	{ "3dg-a",	0x100, 0, R8A77990_PD_3DG_A,	R8A77990_PD_ALWAYS_ON },
+@@ -39,9 +38,9 @@ static int __init r8a77990_sysc_init(void)
+ {
+ 	if (soc_device_match(r8a77990)) {
+ 		/* Fix incorrect 3DG hierarchy */
+-		swap(r8a77990_areas[7], r8a77990_areas[8]);
+-		r8a77990_areas[7].parent = R8A77990_PD_ALWAYS_ON;
+-		r8a77990_areas[8].parent = R8A77990_PD_3DG_B;
++		swap(r8a77990_areas[6], r8a77990_areas[7]);
++		r8a77990_areas[6].parent = R8A77990_PD_ALWAYS_ON;
++		r8a77990_areas[7].parent = R8A77990_PD_3DG_B;
+ 	}
+ 
+ 	return 0;
+-- 
+2.31.0
+
