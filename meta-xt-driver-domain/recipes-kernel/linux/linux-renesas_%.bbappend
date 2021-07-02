@@ -169,6 +169,7 @@ SRC_URI_append_h3ulcb-4x2g-ab-xt = " \
 
 SRC_URI_append_h3ulcb-4x2g-ab-xt = " \
     file://0001-xen-Initial-version-of-Xen-passthrough-helper-driver.patch \
+    file://xt_pass_drv.cfg \
 "
 
 KERNEL_DEVICETREE_h3ulcb-4x2g-ab-xt = " \
