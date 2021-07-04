@@ -1,0 +1,38 @@
+From 86eb8f9eeffde5faa6c4955bacff8fca9d3553b7 Mon Sep 17 00:00:00 2001
+From: Valerii Chubar <valerii_chubar@epam.com>
+Date: Mon, 5 Jul 2021 02:15:12 +0300
+Subject: [PATCH 14/15] tmp half fixed rproc compilation errors
+
+---
+ drivers/remoteproc/xen_rproc.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/remoteproc/xen_rproc.c b/drivers/remoteproc/xen_rproc.c
+index 8e727fa60512..f50bb428b80b 100644
+--- a/drivers/remoteproc/xen_rproc.c
++++ b/drivers/remoteproc/xen_rproc.c
+@@ -158,9 +158,10 @@ static int xen_rproc_load_fw(struct rproc *rproc, const struct firmware *fw)
+ 	return 0;
+ }
+ 
+-static const struct rproc_fw_ops xen_rproc_fw_ops = {
++static const struct rproc_ops xen_rproc_fw_ops = {
+ 	.load = xen_rproc_load_fw,
+-	.find_rsc_table = xen_rproc_find_rsc_table,
++	// TO DO: fix this- find_rsc_table is removed at 4f6fd5a03779cefdf3401ed20690f67ff76cf1ff
++	// .find_rsc_table = xen_rproc_find_rsc_table,
+ 	.find_loaded_rsc_table = xen_rproc_find_loaded_rsc_table,
+ };
+ 
+@@ -227,7 +228,7 @@ static int xen_rproc_probe(struct platform_device *pdev)
+ 	INIT_WORK(&data->workqueue, handle_event);
+ 
+ 	rproc->has_iommu = false;
+-	rproc->fw_ops = &xen_rproc_fw_ops;
++	rproc->ops = &xen_rproc_fw_ops;
+ 	rproc->auto_boot = false;
+ 
+ 	platform_set_drvdata(pdev, rproc);
+-- 
+2.17.1
+

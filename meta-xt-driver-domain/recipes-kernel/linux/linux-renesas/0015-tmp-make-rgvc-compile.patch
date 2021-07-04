@@ -1,0 +1,773 @@
+From 77d2923f0f2d94d493fc50cbd9c4e93faaa3b6f3 Mon Sep 17 00:00:00 2001
+From: Valerii Chubar <valerii_chubar@epam.com>
+Date: Mon, 5 Jul 2021 02:16:28 +0300
+Subject: [PATCH 15/15] tmp make rgvc compile
+
+---
+ drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c  | 106 ++++----
+ drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.h  |   2 +-
+ drivers/gpu/drm/rcar-rvgc/rcar_rvgc_kms.c  | 284 +++++++++++----------
+ drivers/gpu/drm/rcar-rvgc/rcar_rvgc_pipe.c | 220 ++++++++--------
+ 4 files changed, 311 insertions(+), 301 deletions(-)
+
+diff --git a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c
+index 618da68f83ec..0b5981531bd5 100644
+--- a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c
++++ b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.c
+@@ -20,6 +20,7 @@
+ #include <drm/drm_atomic_helper.h>
+ #include <drm/drm_crtc_helper.h>
+ #include <drm/drm_fb_cma_helper.h>
++#include <drm/drm_fb_helper.h>
+ #include <drm/drm_gem_cma_helper.h>
+ 
+ #include "rcar_rvgc_drv.h"
+@@ -109,7 +110,8 @@ static void rcar_rvgc_lastclose(struct drm_device *dev)
+ {
+ 	struct rcar_rvgc_device *rcrvgc = dev->dev_private;
+ 
+-	drm_fbdev_cma_restore_mode(rcrvgc->fbdev);
++	// drm_fbdev_cma_restore_mode(rcrvgc->fbdev);
++	drm_fb_helper_restore_fbdev_mode_unlocked(rcrvgc->fbdev);
+ }
+ 
+ static int rcar_rvgc_dumb_create(struct drm_file *file, struct drm_device *dev,
+@@ -127,31 +129,31 @@ static int rcar_rvgc_dumb_create(struct drm_file *file, struct drm_device *dev,
+ 
+ DEFINE_DRM_GEM_CMA_FOPS(rcar_rvgc_fops);
+ 
+-static struct drm_driver rcar_rvgc_driver = {
+-	.driver_features	= DRIVER_GEM | DRIVER_MODESET | DRIVER_PRIME
+-				| DRIVER_ATOMIC,
+-	.gem_free_object_unlocked = drm_gem_cma_free_object,
+-	.gem_vm_ops		= &drm_gem_cma_vm_ops,
+-	.prime_handle_to_fd	= drm_gem_prime_handle_to_fd,
+-	.prime_fd_to_handle	= drm_gem_prime_fd_to_handle,
+-	.gem_prime_export	= drm_gem_prime_export,
+-	.gem_prime_import	= drm_gem_prime_import,
+-	.gem_prime_get_sg_table	= drm_gem_cma_prime_get_sg_table,
+-	.gem_prime_import_sg_table = drm_gem_cma_prime_import_sg_table,
+-	.gem_prime_vmap		= drm_gem_cma_prime_vmap,
+-	.gem_prime_vunmap	= drm_gem_cma_prime_vunmap,
+-	.gem_prime_mmap		= drm_gem_cma_prime_mmap,
+-	.dumb_create		= rcar_rvgc_dumb_create,
+-	.major			= 1,
+-	.minor			= 0,
+-	.name			= RCAR_RVGC_DRM_NAME,
+-	.desc			= "Renesas Virtual Graphics Card",
+-	.date			= "20190408",
+-	.fops			= &rcar_rvgc_fops,
+-	.lastclose		= rcar_rvgc_lastclose,
+-	.enable_vblank		= rcar_rvgc_crtc_enable_vblank,
+-	.disable_vblank		= rcar_rvgc_crtc_disable_vblank,
+-};
++// static struct drm_driver rcar_rvgc_driver = {
++	// .driver_features	= DRIVER_GEM | DRIVER_MODESET | DRIVER_PRIME
++				// | DRIVER_ATOMIC,
++	// .gem_free_object_unlocked = drm_gem_cma_free_object,
++	// .gem_vm_ops		= &drm_gem_cma_vm_ops,
++	// .prime_handle_to_fd	= drm_gem_prime_handle_to_fd,
++	// .prime_fd_to_handle	= drm_gem_prime_fd_to_handle,
++	// .gem_prime_export	= drm_gem_prime_export,
++	// .gem_prime_import	= drm_gem_prime_import,
++	// .gem_prime_get_sg_table	= drm_gem_cma_prime_get_sg_table,
++	// .gem_prime_import_sg_table = drm_gem_cma_prime_import_sg_table,
++	// .gem_prime_vmap		= drm_gem_cma_prime_vmap,
++	// .gem_prime_vunmap	= drm_gem_cma_prime_vunmap,
++	// .gem_prime_mmap		= drm_gem_cma_prime_mmap,
++	// .dumb_create		= rcar_rvgc_dumb_create,
++	// .major			= 1,
++	// .minor			= 0,
++	// .name			= RCAR_RVGC_DRM_NAME,
++	// .desc			= "Renesas Virtual Graphics Card",
++	// .date			= "20190408",
++	// .fops			= &rcar_rvgc_fops,
++	// .lastclose		= rcar_rvgc_lastclose,
++	// .enable_vblank		= rcar_rvgc_crtc_enable_vblank,
++	// .disable_vblank		= rcar_rvgc_crtc_disable_vblank,
++// };
+ 
+ 
+ /* -----------------------------------------------------------------------------
+@@ -168,15 +170,15 @@ static void rcar_rvgc_remove(struct rpmsg_device *rpdev)
+ 	else
+ 		kthread_stop(rcrvgc->vsync_thread);
+ 
+-	if (rcrvgc->fbdev)
+-		drm_fbdev_cma_fini(rcrvgc->fbdev);
++	// if (rcrvgc->fbdev)
++		// drm_fbdev_cma_fini(rcrvgc->fbdev);
+ 
+-	if (rcrvgc->ddev) {
+-		drm_dev_unregister(ddev);
+-		drm_kms_helper_poll_fini(ddev);
+-		drm_mode_config_cleanup(ddev);
+-		drm_dev_unref(ddev);
+-	}
++	// if (rcrvgc->ddev) {
++	// 	drm_dev_unregister(ddev);
++	// 	drm_kms_helper_poll_fini(ddev);
++	// 	drm_mode_config_cleanup(ddev);
++	// 	drm_dev_unref(ddev);
++	// }
+ 
+ 	return;
+ }
+@@ -234,31 +236,31 @@ static int rcar_rvgc_probe(struct rpmsg_device *rpdev)
+ 	}
+ 
+ 	/* DRM/KMS objects */
+-	ddev = drm_dev_alloc(&rcar_rvgc_driver, &rpdev->dev);
+-	if (IS_ERR(ddev))
+-		return PTR_ERR(ddev);
++	// ddev = drm_dev_alloc(&rcar_rvgc_driver, &rpdev->dev);
++	// if (IS_ERR(ddev))
++		// return PTR_ERR(ddev);
+ 
+ 	/* Save a link to struct drm_device (and vice versa) */
+-	rcrvgc->ddev = ddev;
+-	ddev->dev_private = rcrvgc;
+-
+-	ret = rcar_rvgc_modeset_init(rcrvgc);
+-	if (ret < 0) {
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(&rpdev->dev,
+-				"failed to initialize pipe (%d)\n", ret);
+-		goto error;
+-	}
++	// rcrvgc->ddev = ddev;
++	// ddev->dev_private = rcrvgc;
+ 
+-	ddev->irq_enabled = 1;
++	// ret = rcar_rvgc_modeset_init(rcrvgc);
++	// if (ret < 0) {
++	// 	if (ret != -EPROBE_DEFER)
++	// 		dev_err(&rpdev->dev,
++	// 			"failed to initialize pipe (%d)\n", ret);
++	// 	goto error;
++	// }
++
++	// ddev->irq_enabled = 1;
+ 
+ 	/*
+ 	 * Register the DRM device with the core and the connectors with
+ 	 * sysfs.
+-	 */
+-	ret = drm_dev_register(ddev, 0);
+-	if (ret)
+-		goto error;
++	//  */
++	// ret = drm_dev_register(ddev, 0);
++	// if (ret)
++	// 	goto error;
+ 
+ 	DRM_INFO("Device %s probed\n", dev_name(&rpdev->dev));
+ 
+diff --git a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.h b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.h
+index 953a9f403172..2dbbc095c9a5 100644
+--- a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.h
++++ b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_drv.h
+@@ -32,7 +32,7 @@ struct rcar_rvgc_device {
+ 	struct device *dev;
+ 
+ 	struct drm_device *ddev;
+-	struct drm_fbdev_cma *fbdev;
++	struct drm_fb_helper *fbdev;
+ 
+ 	struct rpmsg_device *rpdev;
+ 
+diff --git a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_kms.c b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_kms.c
+index 74690e5e4fb5..b70d3890316f 100644
+--- a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_kms.c
++++ b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_kms.c
+@@ -1,4 +1,4 @@
+-#include <drm/drmP.h>
++// #include <drm/drmP.h>
+ #include <drm/drm_device.h>
+ #include <drm/drm_atomic.h>
+ #include <drm/drm_atomic_helper.h>
+@@ -60,57 +60,58 @@ static struct drm_framebuffer *rcar_rvgc_fb_create(struct drm_device *dev, struc
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+-	return drm_fb_cma_create(dev, file_priv, mode_cmd);
++	// return drm_fb_cma_create(dev, file_priv, mode_cmd);
++	return NULL;
+ }
+ 
+ /********** VBlank Handling **********/
+ static int vsync_thread_fn(void *data)
+ {
+-	struct rcar_rvgc_device *rcrvgc = (struct rcar_rvgc_device*)data;
+-	struct drm_crtc *crtc;
+-	struct rcar_rvgc_pipe *rvgc_pipe;
+-	unsigned int nr_rvgc_pipes = rcrvgc->nr_rvgc_pipes;
+-	int i;
+-	int pipe_vblk_pending;
+-	unsigned int display_idx;
+-	struct drm_pending_vblank_event *event;
+-	unsigned long flags;
++	// struct rcar_rvgc_device *rcrvgc = (struct rcar_rvgc_device*)data;
++	// struct drm_crtc *crtc;
++	// struct rcar_rvgc_pipe *rvgc_pipe;
++	// unsigned int nr_rvgc_pipes = rcrvgc->nr_rvgc_pipes;
++	// int i;
++	// int pipe_vblk_pending;
++	// unsigned int display_idx;
++	// struct drm_pending_vblank_event *event;
++	// unsigned long flags;
+ 
+-	while (!kthread_should_stop()) {
++	// while (!kthread_should_stop()) {
+ 
+-		wait_event_interruptible(vblank_enable_wait_queue, atomic_read(&global_vblank_enable));
++	// 	wait_event_interruptible(vblank_enable_wait_queue, atomic_read(&global_vblank_enable));
+ 
+-		wait_event_interruptible(rcrvgc->vblank_pending_wait_queue, rcrvgc->vblank_pending);
++	// 	wait_event_interruptible(rcrvgc->vblank_pending_wait_queue, rcrvgc->vblank_pending);
+ 
+-		for (i=0; i<nr_rvgc_pipes; i++) {
+-			rvgc_pipe = &rcrvgc->rvgc_pipes[i];
+-			display_idx = rvgc_pipe->display_mapping;;
++	// 	for (i=0; i<nr_rvgc_pipes; i++) {
++	// 		rvgc_pipe = &rcrvgc->rvgc_pipes[i];
++	// 		display_idx = rvgc_pipe->display_mapping;;
+ 
+-			pipe_vblk_pending = test_and_clear_bit(display_idx, (long unsigned int*) &rcrvgc->vblank_pending);
++	// 		pipe_vblk_pending = test_and_clear_bit(display_idx, (long unsigned int*) &rcrvgc->vblank_pending);
+ 
+-			if (pipe_vblk_pending && rvgc_pipe->vblank_enabled) {
+-				crtc = &rvgc_pipe->drm_simple_pipe.crtc;
++	// 		if (pipe_vblk_pending && rvgc_pipe->vblank_enabled) {
++	// 			crtc = &rvgc_pipe->drm_simple_pipe.crtc;
+ 
+-				drm_crtc_handle_vblank(crtc);
++	// 			// drm_crtc_handle_vblank(crtc);
+ 
+-				spin_lock_irqsave(&crtc->dev->event_lock, flags);
+-				event = rvgc_pipe->event;
+-				rvgc_pipe->event = NULL;
+-				spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
++	// 			spin_lock_irqsave(&crtc->dev->event_lock, flags);
++	// 			event = rvgc_pipe->event;
++	// 			rvgc_pipe->event = NULL;
++	// 			spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
+ 
+-				if (event == NULL)
+-					continue;
++	// 			if (event == NULL)
++	// 				continue;
+ 
+-				spin_lock_irqsave(&crtc->dev->event_lock, flags);
+-				drm_crtc_send_vblank_event(crtc, event);
+-				spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
++	// 			spin_lock_irqsave(&crtc->dev->event_lock, flags);
++	// 			drm_crtc_send_vblank_event(crtc, event);
++	// 			spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
+ 
+-				drm_crtc_vblank_put(crtc);
+-			}
+-		}
+-	}
++	// 			drm_crtc_vblank_put(crtc);
++	// 		}
++	// 	}
++	// }
+ 
+-	dev_dbg(rcrvgc->dev, "vsync thread exiting\n");
++	// dev_dbg(rcrvgc->dev, "vsync thread exiting\n");
+ 	return 0;
+ }
+ 
+@@ -171,108 +172,113 @@ static const struct drm_mode_config_helper_funcs rcar_rvgc_mode_config_helper =
+ 
+ int rcar_rvgc_modeset_init(struct rcar_rvgc_device *rcrvgc)
+ {
+-	struct drm_device *dev = rcrvgc->ddev;
+-	struct drm_fbdev_cma *fbdev;
+-	struct device_node *dt_node;
+-	u32 nr_rvgc_pipes;
+-	int ret = 0;
+-	int i;
+-
+-	drm_mode_config_init(dev);
+-
+-	dev->mode_config.min_width = 0;
+-	dev->mode_config.min_height = 0;
+-	dev->mode_config.max_width = 4096;
+-	dev->mode_config.max_height = 2160;
+-	dev->mode_config.funcs = &rcar_rvgc_mode_config_funcs;
+-	dev->mode_config.helper_private = &rcar_rvgc_mode_config_helper;
+-
+-	dt_node = of_find_node_by_path("/rvgc");
+-	if (!dt_node) {
+-		dev_err(rcrvgc->dev, "Cannot find devicetree node \"/rvgc\"\n");
+-		ret = -EINVAL;
+-		goto exit;
+-	}
+-
+-	ret = of_property_read_u32(dt_node, "nr-displays", &nr_rvgc_pipes);
+-	if (ret) {
+-		dev_err(rcrvgc->dev, "can't read property \"nr-displays\" in node \"/rvgc\"\n");
+-		ret = -EINVAL;
+-		goto exit;
+-	}
+-
+-	rcrvgc->nr_rvgc_pipes = nr_rvgc_pipes;
+-	rcrvgc->rvgc_pipes = kzalloc(sizeof(struct rcar_rvgc_pipe) * nr_rvgc_pipes, GFP_KERNEL);
+-	if (!rcrvgc->rvgc_pipes)
+-		return -ENOMEM;
+-
+-	dev_info(rcrvgc->dev, "Number of virtual displays = %u\n", rcrvgc->nr_rvgc_pipes);
+-
+-	/*
+-	 * Initialize display pipes
+-	 */
+-	for  (i=0; i<nr_rvgc_pipes ; i++) {
+-		struct rcar_rvgc_pipe *rvgc_pipe = &rcrvgc->rvgc_pipes[i];
+-		rvgc_pipe->idx = i;
+-
+-		ret = of_property_read_u32_index(dt_node, "display-mappings", i, &rvgc_pipe->display_mapping);
+-		if (ret) {
+-			dev_err(rcrvgc->dev, "can't read value in \"display-mappings\" index = %d\n", i);
+-			ret = -EINVAL;
+-			goto exit;
+-		}
+-
+-		ret = of_property_read_u32_index(dt_node, "display-layer", i, &rvgc_pipe->display_layer);
+-		if (ret) {
+-			dev_err(rcrvgc->dev, "can't read value in \"display-layer\" index = %d. Using default (4)\n", i);
+-			rvgc_pipe->display_layer = 4;
+-		}
+-
+-		ret = rcar_rvgc_pipe_init(rcrvgc, rvgc_pipe);
+-		if (ret) {
+-			dev_err(rcrvgc->dev, "Pipe %d init failed: %d\n", i, ret);
+-			goto exit;
+-		}
+-	}
+-
+-	init_waitqueue_head(&vblank_enable_wait_queue);
+-
+-	/*
+-	 * Initialize vertical blanking interrupts handling. Start with vblank
+-	 * disabled for all CRTCs.
+-	 */
+-	ret = drm_vblank_init(dev, nr_rvgc_pipes);
+-	if (ret < 0) {
+-		dev_err(rcrvgc->dev, "drm_vblank_init failed: %d\n", ret);
+-		goto exit;
+-	}
+-	for  (i=0; i<nr_rvgc_pipes ; i++) {
+-		struct rcar_rvgc_pipe *rvgc_pipe = &rcrvgc->rvgc_pipes[i];
+-		drm_crtc_vblank_off(&rvgc_pipe->drm_simple_pipe.crtc);
+-	}
+-
+-	/* Reset crtcs, encoders and connectors */
+-	drm_mode_config_reset(dev);
+-
+-	/*
+-	 * Initializes drm_fbdev_cma struct
+-	 */
+-	fbdev = drm_fbdev_cma_init(dev, 32, dev->mode_config.num_connector);
+-	ret = IS_ERR(fbdev);
+-	if (ret) {
+-		dev_err(rcrvgc->dev, "drm_fbdev_cma_init failed: %d\n", ret);
+-		goto exit;
+-	}
+-
+-	rcrvgc->fbdev = fbdev;
+-
+-	if (rcrvgc->vsync_thread)
+-		dev_warn(rcrvgc->dev, "vsync_thread is already running\n");
+-	else
+-		rcrvgc->vsync_thread = kthread_run(vsync_thread_fn,
+-						rcrvgc,
+-						"rvgc_vsync kthread");
+-
+-exit:
+-	return ret;
++	return 0;
+ }
++
++// int rcar_rvgc_modeset_init(struct rcar_rvgc_device *rcrvgc)
++// {
++// 	struct drm_device *dev = rcrvgc->ddev;
++// 	struct drm_fbdev_cma *fbdev;
++// 	struct device_node *dt_node;
++// 	u32 nr_rvgc_pipes;
++// 	int ret = 0;
++// 	int i;
++
++// 	drm_mode_config_init(dev);
++
++// 	dev->mode_config.min_width = 0;
++// 	dev->mode_config.min_height = 0;
++// 	dev->mode_config.max_width = 4096;
++// 	dev->mode_config.max_height = 2160;
++// 	dev->mode_config.funcs = &rcar_rvgc_mode_config_funcs;
++// 	dev->mode_config.helper_private = &rcar_rvgc_mode_config_helper;
++
++// 	dt_node = of_find_node_by_path("/rvgc");
++// 	if (!dt_node) {
++// 		dev_err(rcrvgc->dev, "Cannot find devicetree node \"/rvgc\"\n");
++// 		ret = -EINVAL;
++// 		goto exit;
++// 	}
++
++// 	ret = of_property_read_u32(dt_node, "nr-displays", &nr_rvgc_pipes);
++// 	if (ret) {
++// 		dev_err(rcrvgc->dev, "can't read property \"nr-displays\" in node \"/rvgc\"\n");
++// 		ret = -EINVAL;
++// 		goto exit;
++// 	}
++
++// 	rcrvgc->nr_rvgc_pipes = nr_rvgc_pipes;
++// 	rcrvgc->rvgc_pipes = kzalloc(sizeof(struct rcar_rvgc_pipe) * nr_rvgc_pipes, GFP_KERNEL);
++// 	if (!rcrvgc->rvgc_pipes)
++// 		return -ENOMEM;
++
++// 	dev_info(rcrvgc->dev, "Number of virtual displays = %u\n", rcrvgc->nr_rvgc_pipes);
++
++// 	/*
++// 	 * Initialize display pipes
++// 	 */
++// 	for  (i=0; i<nr_rvgc_pipes ; i++) {
++// 		struct rcar_rvgc_pipe *rvgc_pipe = &rcrvgc->rvgc_pipes[i];
++// 		rvgc_pipe->idx = i;
++
++// 		ret = of_property_read_u32_index(dt_node, "display-mappings", i, &rvgc_pipe->display_mapping);
++// 		if (ret) {
++// 			dev_err(rcrvgc->dev, "can't read value in \"display-mappings\" index = %d\n", i);
++// 			ret = -EINVAL;
++// 			goto exit;
++// 		}
++
++// 		ret = of_property_read_u32_index(dt_node, "display-layer", i, &rvgc_pipe->display_layer);
++// 		if (ret) {
++// 			dev_err(rcrvgc->dev, "can't read value in \"display-layer\" index = %d. Using default (4)\n", i);
++// 			rvgc_pipe->display_layer = 4;
++// 		}
++
++// 		ret = rcar_rvgc_pipe_init(rcrvgc, rvgc_pipe);
++// 		if (ret) {
++// 			dev_err(rcrvgc->dev, "Pipe %d init failed: %d\n", i, ret);
++// 			goto exit;
++// 		}
++// 	}
++
++// 	init_waitqueue_head(&vblank_enable_wait_queue);
++
++// 	/*
++// 	 * Initialize vertical blanking interrupts handling. Start with vblank
++// 	 * disabled for all CRTCs.
++// 	 */
++// 	ret = drm_vblank_init(dev, nr_rvgc_pipes);
++// 	if (ret < 0) {
++// 		dev_err(rcrvgc->dev, "drm_vblank_init failed: %d\n", ret);
++// 		goto exit;
++// 	}
++// 	for  (i=0; i<nr_rvgc_pipes ; i++) {
++// 		struct rcar_rvgc_pipe *rvgc_pipe = &rcrvgc->rvgc_pipes[i];
++// 		drm_crtc_vblank_off(&rvgc_pipe->drm_simple_pipe.crtc);
++// 	}
++
++// 	/* Reset crtcs, encoders and connectors */
++// 	drm_mode_config_reset(dev);
++
++// 	/*
++// 	 * Initializes drm_fbdev_cma struct
++// 	 */
++// 	fbdev = drm_fbdev_cma_init(dev, 32, dev->mode_config.num_connector);
++// 	ret = IS_ERR(fbdev);
++// 	if (ret) {
++// 		dev_err(rcrvgc->dev, "drm_fbdev_cma_init failed: %d\n", ret);
++// 		goto exit;
++// 	}
++
++// 	rcrvgc->fbdev = fbdev;
++
++// 	if (rcrvgc->vsync_thread)
++// 		dev_warn(rcrvgc->dev, "vsync_thread is already running\n");
++// 	else
++// 		rcrvgc->vsync_thread = kthread_run(vsync_thread_fn,
++// 						rcrvgc,
++// 						"rvgc_vsync kthread");
++
++// exit:
++// 	return ret;
++// }
+diff --git a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_pipe.c b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_pipe.c
+index f2a910037656..52f8b5861989 100644
+--- a/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_pipe.c
++++ b/drivers/gpu/drm/rcar-rvgc/rcar_rvgc_pipe.c
+@@ -1,4 +1,3 @@
+-#include <drm/drmP.h>
+ #include <drm/drm_device.h>
+ 
+ #include "rcar_rvgc_kms.h"
+@@ -95,15 +94,15 @@ static int rvgc_connector_get_modes(struct drm_connector *connector)
+ }
+ 
+ static const struct drm_connector_helper_funcs rvgc_connector_hfuncs = {
+-	.get_modes = rvgc_connector_get_modes,
+-	.best_encoder = drm_atomic_helper_best_encoder,
++	// .get_modes = rvgc_connector_get_modes,
++	// .best_encoder = drm_atomic_helper_best_encoder,
+ };
+ 
+ static enum drm_connector_status
+ rvgc_connector_detect(struct drm_connector *connector, bool force)
+ {
+-	if (drm_dev_is_unplugged(connector->dev))
+-		return connector_status_disconnected;
++	// if (drm_dev_is_unplugged(connector->dev))
++	// 	return connector_status_disconnected;
+ 
+ 	return connector->status;
+ }
+@@ -116,134 +115,137 @@ static void rvgc_connector_destroy(struct drm_connector *connector)
+ 	kfree(rconn);
+ }
+ 
+-static const struct drm_connector_funcs rvgc_connector_funcs = {
+-	.reset = drm_atomic_helper_connector_reset,
+-	.detect = rvgc_connector_detect,
+-	.fill_modes = drm_helper_probe_single_connector_modes,
+-	.destroy = rvgc_connector_destroy,
+-	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
+-	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
+-};
++// static const struct drm_connector_funcs rvgc_connector_funcs = {
++// 	.reset = drm_atomic_helper_connector_reset,
++// 	.detect = rvgc_connector_detect,
++// 	.fill_modes = drm_helper_probe_single_connector_modes,
++// 	.destroy = rvgc_connector_destroy,
++// 	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
++// 	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
++// };
+ 
+ struct drm_connector *
+ rvgc_connector_create(struct rcar_rvgc_pipe *rvgc_pipe)
+ {
+-	struct rcar_rvgc_device *rvgc_dev = rvgc_pipe->rcar_rvgc_dev;
+-	struct drm_device *drm = rvgc_dev->ddev;
+-	struct rvgc_connector *rconn;
+-	struct drm_connector *connector;
+-	int ret;
+-	int connector_type = DRM_MODE_CONNECTOR_HDMIA;
+-
+-	rconn = kzalloc(sizeof(*rconn), GFP_KERNEL);
+-	if (!rconn)
+-		return ERR_PTR(-ENOMEM);
+-
+-	rconn->rvgc_dev = rvgc_dev;
+-	rconn->pipe_idx = rvgc_pipe->idx;
+-	connector = &rconn->base;
+-
+-	drm_connector_helper_add(connector, &rvgc_connector_hfuncs);
+-	ret = drm_connector_init(drm, connector, &rvgc_connector_funcs,
+-				 connector_type);
+-	if (ret) {
+-		kfree(rconn);
+-		return ERR_PTR(ret);
+-	}
+-
+-	connector->status = connector_status_connected;
+-
+-	return connector;
++	// struct rcar_rvgc_device *rvgc_dev = rvgc_pipe->rcar_rvgc_dev;
++	// struct drm_device *drm = rvgc_dev->ddev;
++	// struct rvgc_connector *rconn;
++	// struct drm_connector *connector;
++	// int ret;
++	// int connector_type = DRM_MODE_CONNECTOR_HDMIA;
++
++	// rconn = kzalloc(sizeof(*rconn), GFP_KERNEL);
++	// if (!rconn)
++	// 	return ERR_PTR(-ENOMEM);
++
++	// rconn->rvgc_dev = rvgc_dev;
++	// rconn->pipe_idx = rvgc_pipe->idx;
++	// connector = &rconn->base;
++
++	// drm_connector_helper_add(connector, &rvgc_connector_hfuncs);
++	// ret = drm_connector_init(drm, connector, &rvgc_connector_funcs,
++	// 			 connector_type);
++	// if (ret) {
++	// 	kfree(rconn);
++	// 	return ERR_PTR(ret);
++	// }
++
++	// connector->status = connector_status_connected;
++
++	// return connector;
++
++	return ERR_PTR(-ENOMEM);
+ }
+ 
+ static void rvgc_pipe_enable(struct drm_simple_display_pipe *pipe,
+ 			     struct drm_crtc_state *crtc_state,
+ 			     struct drm_plane_state *plane_state)
+ {
+-	struct device *ddev = pipe->plane.dev->dev;
+-	struct rcar_rvgc_pipe *rvgc_pipe = container_of(pipe, struct rcar_rvgc_pipe, drm_simple_pipe);
+-	dev_dbg(ddev, "%s() rvgc_pipe = %d\n", __FUNCTION__, rvgc_pipe->idx);
+-	drm_crtc_vblank_on(&pipe->crtc);
++	// struct device *ddev = pipe->plane.dev->dev;
++	// struct rcar_rvgc_pipe *rvgc_pipe = container_of(pipe, struct rcar_rvgc_pipe, drm_simple_pipe);
++	// dev_dbg(ddev, "%s() rvgc_pipe = %d\n", __FUNCTION__, rvgc_pipe->idx);
++	// drm_crtc_vblank_on(&pipe->crtc);
+ }
+ 
+ static void rvgc_pipe_disable(struct drm_simple_display_pipe *pipe)
+ {
+-	struct device *ddev = pipe->plane.dev->dev;
+-	struct rcar_rvgc_pipe *rvgc_pipe = container_of(pipe, struct rcar_rvgc_pipe, drm_simple_pipe);
+-	dev_dbg(ddev, "%s() rvgc_pipe = %d\n", __FUNCTION__, rvgc_pipe->idx);
+-	drm_crtc_vblank_off(&pipe->crtc);
++	// struct device *ddev = pipe->plane.dev->dev;
++	// struct rcar_rvgc_pipe *rvgc_pipe = container_of(pipe, struct rcar_rvgc_pipe, drm_simple_pipe);
++	// dev_dbg(ddev, "%s() rvgc_pipe = %d\n", __FUNCTION__, rvgc_pipe->idx);
++	// drm_crtc_vblank_off(&pipe->crtc);
+ }
+ 
+ static void rvgc_display_pipe_update(struct drm_simple_display_pipe *pipe,
+ 				struct drm_plane_state *old_state)
+ {
+-	struct drm_gem_cma_object *gem_obj;
+-	int ret;
+-	struct taurus_rvgc_res_msg res_msg;
+-
+-	struct drm_plane_state *new_plane_state = pipe->plane.state;
+-	struct drm_crtc *crtc = &pipe->crtc;
+-	struct device *dev = pipe->plane.dev->dev;
+-	struct rcar_rvgc_device *rcrvgc = dev_get_drvdata(dev);
+-	struct rcar_rvgc_pipe *rvgc_pipe = container_of(pipe, struct rcar_rvgc_pipe, drm_simple_pipe);
+-	unsigned int display_idx = rvgc_pipe->display_mapping;
+-	unsigned int display_layer = rvgc_pipe->display_layer;
+-	unsigned long flags;
+-
+-	/* No need to notify the Taurus server. Just send the vblank
+-	 * event to notify the DRM that the commit is completed. */
+-	if (crtc->state->active_changed || (new_plane_state->fb == old_state->fb)) {
+-		spin_lock_irqsave(&crtc->dev->event_lock, flags);
+-		drm_crtc_send_vblank_event(crtc, crtc->state->event);
+-		crtc->state->event = NULL;
+-		spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
+-		return;
+-	}
+-
+-	/* Update the framebuffer address */
+-	if (new_plane_state->fb) {
+-
+-		gem_obj = drm_fb_cma_get_gem_obj(new_plane_state->fb, 0); //we support only single planar formats
+-
+-		ret = rvgc_taurus_layer_set_addr(rcrvgc,
+-						display_idx,
+-						display_layer,
+-						gem_obj->paddr,
+-						&res_msg);
+-		if (ret) {
+-			dev_err(rcrvgc->dev, "%s(): rvgc_taurus_layer_set_addr(display=%d, layer=%d) failed\n",
+-				__FUNCTION__,
+-				rvgc_pipe->display_mapping,
+-				0);
+-			return;
+-		}
+-	}
+-
+-	/* Save the event in the rvgc_pipe struct so that we can send
+-	 * it as soon as the Taurus notifies us. */
+-	drm_crtc_vblank_get(&pipe->crtc);
+-
+-	spin_lock_irqsave(&crtc->dev->event_lock, flags);
+-	rvgc_pipe->event = crtc->state->event;
+-	crtc->state->event = NULL;
+-	spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
+-
+-	/* Ask the Taurus server to flush the changes */
+-	ret = rvgc_taurus_display_flush(rcrvgc,
+-					display_idx,
+-					0,
+-					&res_msg);
+-	if (ret) {
+-		dev_err(rcrvgc->dev, "%s(): rvgc_taurus_display_flush(%d) failed\n",
+-			__FUNCTION__,
+-			rvgc_pipe->display_mapping);
+-	}
++	// struct drm_gem_cma_object *gem_obj;
++	// int ret;
++	// struct taurus_rvgc_res_msg res_msg;
++
++	// struct drm_plane_state *new_plane_state = pipe->plane.state;
++	// struct drm_crtc *crtc = &pipe->crtc;
++	// struct device *dev = pipe->plane.dev->dev;
++	// struct rcar_rvgc_device *rcrvgc = dev_get_drvdata(dev);
++	// struct rcar_rvgc_pipe *rvgc_pipe = container_of(pipe, struct rcar_rvgc_pipe, drm_simple_pipe);
++	// unsigned int display_idx = rvgc_pipe->display_mapping;
++	// unsigned int display_layer = rvgc_pipe->display_layer;
++	// unsigned long flags;
++
++	// /* No need to notify the Taurus server. Just send the vblank
++	//  * event to notify the DRM that the commit is completed. */
++	// if (crtc->state->active_changed || (new_plane_state->fb == old_state->fb)) {
++	// 	spin_lock_irqsave(&crtc->dev->event_lock, flags);
++	// 	drm_crtc_send_vblank_event(crtc, crtc->state->event);
++	// 	crtc->state->event = NULL;
++	// 	spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
++	// 	return;
++	// }
++
++	// /* Update the framebuffer address */
++	// if (new_plane_state->fb) {
++
++	// 	gem_obj = drm_fb_cma_get_gem_obj(new_plane_state->fb, 0); //we support only single planar formats
++
++	// 	ret = rvgc_taurus_layer_set_addr(rcrvgc,
++	// 					display_idx,
++	// 					display_layer,
++	// 					gem_obj->paddr,
++	// 					&res_msg);
++	// 	if (ret) {
++	// 		dev_err(rcrvgc->dev, "%s(): rvgc_taurus_layer_set_addr(display=%d, layer=%d) failed\n",
++	// 			__FUNCTION__,
++	// 			rvgc_pipe->display_mapping,
++	// 			0);
++	// 		return;
++	// 	}
++	// }
++
++	// /* Save the event in the rvgc_pipe struct so that we can send
++	//  * it as soon as the Taurus notifies us. */
++	// drm_crtc_vblank_get(&pipe->crtc);
++
++	// spin_lock_irqsave(&crtc->dev->event_lock, flags);
++	// rvgc_pipe->event = crtc->state->event;
++	// crtc->state->event = NULL;
++	// spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
++
++	// /* Ask the Taurus server to flush the changes */
++	// ret = rvgc_taurus_display_flush(rcrvgc,
++	// 				display_idx,
++	// 				0,
++	// 				&res_msg);
++	// if (ret) {
++	// 	dev_err(rcrvgc->dev, "%s(): rvgc_taurus_display_flush(%d) failed\n",
++	// 		__FUNCTION__,
++	// 		rvgc_pipe->display_mapping);
++	// }
+ }
+ 
+ static int rvgc_display_pipe_prepare_fb(struct drm_simple_display_pipe *pipe,
+ 					struct drm_plane_state *plane_state)
+ {
+-	return drm_fb_cma_prepare_fb(&pipe->plane, plane_state);
++	// return drm_fb_cma_prepare_fb(&pipe->plane, plane_state);
++	return 0;
+ }
+ 
+ static int rvgc_display_pipe_enable_vblank(struct drm_simple_display_pipe *pipe)
+-- 
+2.17.1
+

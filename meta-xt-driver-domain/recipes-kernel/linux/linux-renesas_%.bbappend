@@ -35,6 +35,9 @@ SRC_URI_append_rcar = " \
     file://0011-rvgc-add-plane_state-parameter-to-rvgc_pipe_enable.patch \
     file://0012-Added-patch-for-virtio-Virtio-now-supports-dma-buffe.patch \
     file://0013-rvgc-provide-vblank-callback-for-a-new-API.patch \
+    \
+    file://0014-tmp-half-fixed-rproc-compilation-errors.patch \
+    file://0015-tmp-make-rgvc-compile.patch \
 "
 
 KERNEL_DEVICETREE_append_rcar = " \
