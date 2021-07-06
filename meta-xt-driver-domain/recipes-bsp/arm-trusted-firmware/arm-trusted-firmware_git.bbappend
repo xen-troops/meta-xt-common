@@ -6,6 +6,12 @@ SRC_URI += "\
     file://0003-rcar-Add-BOARD_SALVATOR_X-case-in-ddr_rank_judge.patch \
 "
 
+SRC_URI_append = " \
+    file://0004-Enable-DAVEHD-on-R-Car-M3.patch \
+    file://0005-Change-the-security-attribute-setting-for-Cortex-R7-.patch \
+    file://0006-Kick-CR7-in-bl2.patch \
+"
+
 do_deploy_append () {
     install -m 0644 ${S}/tools/renesas/rcar_layout_create/bootparam_sa0.bin ${DEPLOYDIR}/bootparam_sa0.bin
     install -m 0644 ${S}/tools/renesas/rcar_layout_create/cert_header_sa6.bin ${DEPLOYDIR}/cert_header_sa6.bin

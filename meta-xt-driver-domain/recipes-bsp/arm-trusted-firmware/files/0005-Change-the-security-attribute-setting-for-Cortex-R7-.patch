@@ -1,0 +1,28 @@
+From 7c7effdc95250cda577e288abf7d8c906d56183b Mon Sep 17 00:00:00 2001
+From: Vito Colagiacomo <vito.colagiacomo@renesas.com>
+Date: Tue, 21 Aug 2018 12:55:34 +0200
+Subject: [PATCH 2/3] Change the security attribute setting for Cortex-R7
+ master port to "Secure"
+
+This way the CR7 has enough privileges to set protected registers of
+INTC-RT.
+---
+ plat/renesas/rcar/bl2_secure_setting.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plat/renesas/rcar/bl2_secure_setting.c b/plat/renesas/rcar/bl2_secure_setting.c
+index 7b72bcf8b..b4ae37ae1 100644
+--- a/plat/renesas/rcar/bl2_secure_setting.c
++++ b/plat/renesas/rcar/bl2_secure_setting.c
+@@ -23,7 +23,7 @@ static const struct {
+ 	/* Bit 0: ARM realtime core (Cortex-R7) master port             */
+ 	/*       0: Non-Secure                                          */
+ 	{
+-	SEC_SRC, 0x0000001EU},
++	SEC_SRC, 0x0000001FU},
+ 	/** Security attribute setting for slave ports 0 to 15		*/
+ 	    /*      {SEC_SEL0,              0xFFFFFFFFU},                   */
+ 	    /*      {SEC_SEL1,              0xFFFFFFFFU},                   */
+-- 
+2.17.1
+
