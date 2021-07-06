@@ -18,12 +18,58 @@
 #define PHANDLE_GIC (65000)
 
 / {
+	aliases {
+		/delete-property/ i2c4;
+	};
+
 	soc {
 		/* This must point to Xen interrupt-parent */
 		interrupt-parent = <PHANDLE_GIC>;
 	};
 
+	reserved-memory {
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+		ranges;
+		cr7_cma: linux,cma@58000000 {
+			compatible = "shared-dma-pool";
+			reg = <0x0 0x58000000 0x0 0x2000000>;
+			no-map;
+			/delete-property/ reusable;
+			/delete-property/ linux,cma-default;
+		};
+		/delete-node/ linux,lossy_decompress@54000000;
+		/delete-node/ linux,adsp@57000000;
+		/delete-node/ linux,multimedia@70000000;
+	};
+
+	/delete-node/ mmngr;
+
+	rvgc {
+		nr-displays = <0x1>;
+		display-mappings = <0x0>;
+		display-layer = <0x4>;
+
+		dma-ranges = <0x0 0x0 0x0 0x0 0x1 0x0>;
+		rvgc-memory {
+			memory-region = <&cr7_cma>;
+		};
+	};
+
 	passthrough {
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+		interrupt-parent = <PHANDLE_GIC>;
+		compatible = "simple-bus";
+
+		xen_rproc {
+			interrupt-parent = <PHANDLE_GIC>;
+			dma-ranges = <0x0 0x0 0x0 0x0 0x1 0x0>;
+			memory-region = <&cr7_cma>;
+			compatible = "xen-rproc";
+			interrupts = <0x00 233 0x04>;
+			interrupt-names = "xen-rproc";
+		};
 	};
 
 	/*
@@ -48,13 +94,23 @@
 	/delete-node/thermal-zones;
 	/delete-node/pmu_a57;
 	/delete-node/pmu_a53;
-};
 
-/delete-node/&adsp;
+	/* CR7 is responislbe for graphics */
+	/delete-node/ cvbs-in;
+	/delete-node/ hdmi-in;
+	/delete-node/ hdmi-out;
+	/delete-node/ lvds-decoder;
+
+	/delete-node/ lvds;
+	/delete-node/ vga;
+	/delete-node/ vga-encoder;
+};
 
 &sdhi0 {
 	/delete-property/iommus;
 };
+
+/delete-node/&adsp;
 
 &sdhi1 {
 	/delete-property/iommus;
@@ -78,5 +134,5 @@
 };
 
 &sound_card {
-	dais = <&rsnd_port0>; /* ak4613 */
+	/delete-property/ dais;
 };
