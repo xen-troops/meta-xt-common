@@ -18,6 +18,51 @@
 	reserved-memory {
 		/delete-node/linux,cma@57000000;
 		/delete-node/linux,multimedia@70000000;
+
+		/* This is where CR7 memory located */
+		cr7: linux,cr7@70000000 {
+			compatible = "shared-dma-pool";
+			no-map;
+			reg = <0x0 0x70000000 0x0 0x10000000>;
+		};
+
+		/* Carveout for DomD 1:1 mappnig to be used by CR7 */
+		linux,cma@58000000 {
+			compatible = "shared-dma-pool";
+			reg = <0x0 0x58000000 0x0 0x2000000>;
+		};
+
+		/* Carveout for DomA 1:1 mappnig to be used by CR7 */
+		linux,cma@4E000000 {
+			compatible = "shared-dma-pool";
+			reg = <0x0 0x4E000000 0x0 0x2000000>;
+		};
+	};
+
+	soc {
+		/* Used be Xen itself */
+		cr7_rproc@70400000 {
+			compatible = "renesas,rproc";
+			reg = <0 0x70400000 0 4096>;
+		};
+
+		/* Used by Xen. Taken from Renesas drop as is. */
+		mfis: mfis@e6260000 {
+			compatible = "renesas,mfis";
+			reg = <0x00 0xe6260000 0x00 0x200>;
+			interrupts = <0x00 0xe0 0x04
+				      0x00 0xe1 0x04
+				      0x00 0xe2 0x04
+				      0x00 0xe3 0x04
+				      0x00 0xe4 0x04
+				      0x00 0xe5 0x04
+				      0x00 0xe6 0x04
+				      0x00 0xe7 0x04>;
+			interrupt-names = "eicr0", "eicr1", "eicr2", "eicr3", "eicr4", "eicr5", "eicr6", "eicr7";
+			renesas,mfis-channels = <0x00 0x01 0x02 0x03>;
+			status = "okay";
+		};
+
 	};
 
 	/delete-node/mmngr;
