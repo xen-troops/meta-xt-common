@@ -1,0 +1,93 @@
+From a7bd7d95708047aedfdbeef231eadeb8239068e7 Mon Sep 17 00:00:00 2001
+From: Valentine Barshak <valentine.barshak@cogentembedded.com>
+Date: Thu, 22 Nov 2018 00:17:56 +0300
+Subject: [PATCH 20/22] arm: renesas: Enable RPC HF MTD support for all ULCB
+ boards
+
+This enables RPC HyperFlash MTD support
+for all R-Car Gen3 ULCB boards.
+
+Signed-off-by: Valentine Barshak <valentine.barshak@cogentembedded.com>
+---
+ arch/arm/dts/r8a77950-ulcb-u-boot.dts | 4 ++++
+ arch/arm/dts/r8a77960-ulcb-u-boot.dts | 4 ++++
+ arch/arm/dts/r8a77965-ulcb-u-boot.dts | 4 ++++
+ configs/rcar3_ulcb_defconfig          | 8 ++++++++
+ include/configs/ulcb.h                | 8 ++++++++
+ 5 files changed, 28 insertions(+)
+
+diff --git a/arch/arm/dts/r8a77950-ulcb-u-boot.dts b/arch/arm/dts/r8a77950-ulcb-u-boot.dts
+index b7f26c1..4dd4f4e 100644
+--- a/arch/arm/dts/r8a77950-ulcb-u-boot.dts
++++ b/arch/arm/dts/r8a77950-ulcb-u-boot.dts
+@@ -36,3 +36,7 @@
+ &vcc_sdhi0 {
+ 	u-boot,off-on-delay-us = <20000>;
+ };
++
++&rpc {
++	status = "okay";
++};
+diff --git a/arch/arm/dts/r8a77960-ulcb-u-boot.dts b/arch/arm/dts/r8a77960-ulcb-u-boot.dts
+index bd1d634..40e0b4a 100644
+--- a/arch/arm/dts/r8a77960-ulcb-u-boot.dts
++++ b/arch/arm/dts/r8a77960-ulcb-u-boot.dts
+@@ -36,3 +36,7 @@
+ &vcc_sdhi0 {
+ 	u-boot,off-on-delay-us = <20000>;
+ };
++
++&rpc {
++	status = "okay";
++};
+diff --git a/arch/arm/dts/r8a77965-ulcb-u-boot.dts b/arch/arm/dts/r8a77965-ulcb-u-boot.dts
+index 954d8b6..b1cddb1 100644
+--- a/arch/arm/dts/r8a77965-ulcb-u-boot.dts
++++ b/arch/arm/dts/r8a77965-ulcb-u-boot.dts
+@@ -38,3 +38,7 @@
+ &vcc_sdhi0 {
+ 	u-boot,off-on-delay-us = <20000>;
+ };
++
++&rpc {
++	status = "okay";
++};
+diff --git a/configs/rcar3_ulcb_defconfig b/configs/rcar3_ulcb_defconfig
+index e32b503..355ec90 100644
+--- a/configs/rcar3_ulcb_defconfig
++++ b/configs/rcar3_ulcb_defconfig
+@@ -53,6 +53,14 @@ CONFIG_MMC_IO_VOLTAGE=y
+ CONFIG_MMC_UHS_SUPPORT=y
+ CONFIG_MMC_HS400_SUPPORT=y
+ CONFIG_RENESAS_SDHI=y
++CONFIG_MTD=y
++CONFIG_DM_MTD=y
++CONFIG_MTD_NOR_FLASH=y
++CONFIG_FLASH_CFI_DRIVER=y
++CONFIG_CFI_FLASH=y
++CONFIG_FLASH_CFI_MTD=y
++CONFIG_SYS_FLASH_CFI=y
++CONFIG_RENESAS_RPC_HF=y
+ CONFIG_BITBANGMII=y
+ CONFIG_PHY_MICREL=y
+ CONFIG_PHY_MICREL_KSZ90X1=y
+diff --git a/include/configs/ulcb.h b/include/configs/ulcb.h
+index 15fb627..10d93c3 100644
+--- a/include/configs/ulcb.h
++++ b/include/configs/ulcb.h
+@@ -19,4 +19,12 @@
+ 
+ /* Environment in eMMC, at the end of 2nd "boot sector" */
+ 
++#define CONFIG_CFI_FLASH_USE_WEAK_ACCESSORS
++#define CONFIG_FLASH_SHOW_PROGRESS	45
++#define CONFIG_SYS_FLASH_BANKS_LIST	{ 0x08000000 }
++#define CONFIG_SYS_FLASH_CFI_WIDTH	FLASH_CFI_16BIT
++#define CONFIG_SYS_MAX_FLASH_BANKS_DETECT	1
++#define CONFIG_SYS_MAX_FLASH_SECT	256
++#define CONFIG_SYS_WRITE_SWAPPED_DATA
++
+ #endif /* __ULCB_H */
+-- 
+2.7.4
+
