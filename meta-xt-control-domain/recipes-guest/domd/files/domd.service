@@ -1,0 +1,13 @@
+[Unit]
+Description=DomD
+Requires=proc-xen.mount
+After=proc-xen.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/xl create /etc/xen/domd.cfg
+ExecStop=/usr/sbin/xl destroy DomD
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

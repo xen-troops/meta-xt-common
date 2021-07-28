@@ -1,0 +1,24 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <backend-name>"
+    exit 1
+fi
+
+BACKEND=$1
+
+DOMD_ID=`xl domid DomD`
+XS_PATH="/local/domain/$DOMD_ID/drivers/$BACKEND/status"
+
+while true; do
+    xenstore-watch -n2 $XS_PATH&
+    WATCH_PID=$!
+    STATUS=`xenstore-read $XS_PATH`
+    echo "$BACKEND status is $STATUS"
+    if [ x$STATUS = x"ready" ]; then
+	kill $WATCH_PID
+	systemd-notify --ready
+	exit 0
+    fi
+    wait $WATCH_ID
+done

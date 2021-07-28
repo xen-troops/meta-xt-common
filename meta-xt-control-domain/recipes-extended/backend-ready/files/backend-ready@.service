@@ -1,0 +1,9 @@
+[Unit]
+Description=Wait for backend %i activation
+Requires=domd.service
+After=domd.service
+
+[Service]
+Type=notify
+ExecStart=/usr/lib/xen/bin/wait-for-backend %i
+RemainAfterExit=true
