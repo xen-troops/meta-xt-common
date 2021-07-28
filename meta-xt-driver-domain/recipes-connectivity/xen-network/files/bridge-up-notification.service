@@ -1,0 +1,14 @@
+[Unit]
+Description=Bridge up notification
+Wants=systemd-networkd-wait-online.service
+After=systemd-networkd-wait-online.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/xenstore-write drivers/bridge/status ready
+RemainAfterExit=yes
+ExecStopPost=/usr/bin/xenstore-write drivers/bridge/status dead
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
