@@ -9,5 +9,6 @@ IMAGE_INSTALL_append = " \
 	      camerabe \
 	      xen-network \
 	      dnsmasq \
+	      optee-os \
 	      ${@bb.utils.contains('DISTRO_FEATURES', 'ivi-shell', 'displaymanager', '', d)} \
 	      "
