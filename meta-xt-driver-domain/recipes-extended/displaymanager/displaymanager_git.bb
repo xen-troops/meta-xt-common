@@ -30,9 +30,12 @@ SRC_URI = " \
     git://github.com/xen-troops/DisplayManager.git;protocol=https;branch=yocto-v4.7.0-xt0.1 \
     file://display_manager.conf \
     file://display-manager.service \
+    file://dm-ulcb.cfg \
 "
 S = "${WORKDIR}/git"
 SRCREV = "${AUTOREV}"
+
+DM_CONFIG_ulcb = "dm-ulcb.cfg"
 
 EXTRA_OECMAKE_append = " -DWITH_DOC=OFF -DCMAKE_BUILD_TYPE=Release"
 
