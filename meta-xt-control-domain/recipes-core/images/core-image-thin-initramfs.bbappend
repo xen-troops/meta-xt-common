@@ -1,5 +1,2 @@
-
-
 IMAGE_INSTALL_append = " xen-tools"
-# TODO: Check XT_GUEST_INSTALL
-IMAGE_INSTALL_append = " domd domu"
+IMAGE_INSTALL_append = " ${XT_GUEST_INSTALL}"
