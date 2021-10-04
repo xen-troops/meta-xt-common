@@ -16,11 +16,14 @@ do_install_append() {
     # for static configuration.
     echo "dhcp-range=192.168.0.2,192.168.0.150,12h" >> ${D}${sysconfdir}/dnsmasq.conf
 
-    # Configure IP addresses for DomF, DomA, DomU.
+    # Configure IP addresses for DomA, DomU.
     # MAC addresses are defined in /etc/xen/domX.cfg
-    echo "dhcp-host=08:00:27:ff:cb:cd,domf,192.168.0.3,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
-    echo "dhcp-host=08:00:27:ff:cb:ce,doma,192.168.0.4,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
-    echo "dhcp-host=08:00:27:ff:cb:cf,domu,192.168.0.5,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
+    if ${@bb.utils.contains('XT_GUEST_INSTALL', 'doma', 'true', 'false', d)}; then
+        echo "dhcp-host=08:00:27:ff:cb:ce,doma,192.168.0.4,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
+    fi
+    if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domu', 'true', 'false', d)}; then
+        echo "dhcp-host=08:00:27:ff:cb:cf,domu,192.168.0.5,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
+    fi
 
     # Use resolve.conf provided by systemd-resolved
     echo "resolv-file=/run/systemd/resolve/resolv.conf" >> ${D}${sysconfdir}/dnsmasq.conf
