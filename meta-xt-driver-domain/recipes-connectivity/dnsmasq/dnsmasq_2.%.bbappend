@@ -8,6 +8,23 @@ FILES_${PN} += " \
     ${sysconfdir}/systemd/system/dnsmasq.service.d/depend.conf \
 "
 
+python () {
+    if 'domu' in d.getVar('XT_GUEST_INSTALL', True).split():
+        for pair in d.getVar('XT_GUEST_NETWORK_DOMU', True).split(';'):
+            key, value = pair.split('=')
+            if key == 'mac':
+                d.setVar('DOMU_NET_MAC', value)
+            if key == 'ip':
+                d.setVar('DOMU_NET_IP', value)
+    if 'doma' in d.getVar('XT_GUEST_INSTALL', True).split():
+        for pair in d.getVar('XT_GUEST_NETWORK_DOMA', True).split(';'):
+            key, value = pair.split('=')
+            if key == 'mac':
+                d.setVar('DOMA_NET_MAC', value)
+            if key == 'ip':
+                d.setVar('DOMA_NET_IP', value)
+}
+
 do_install_append() {
     # Make dnsmasq listen only on bridge interface
     echo "interface=xenbr0" >> ${D}${sysconfdir}/dnsmasq.conf
@@ -19,10 +36,10 @@ do_install_append() {
     # Configure IP addresses for DomA, DomU.
     # MAC addresses are defined in /etc/xen/domX.cfg
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'doma', 'true', 'false', d)}; then
-        echo "dhcp-host=08:00:27:ff:cb:ce,doma,192.168.0.4,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
+        echo "dhcp-host="${DOMA_NET_MAC}",domu,"${DOMA_NET_IP}",infinite" >> ${D}${sysconfdir}/dnsmasq.conf
     fi
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domu', 'true', 'false', d)}; then
-        echo "dhcp-host=08:00:27:ff:cb:cf,domu,192.168.0.5,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
+        echo "dhcp-host="${DOMU_NET_MAC}",domu,"${DOMU_NET_IP}",infinite" >> ${D}${sysconfdir}/dnsmasq.conf
     fi
 
     # Use resolve.conf provided by systemd-resolved

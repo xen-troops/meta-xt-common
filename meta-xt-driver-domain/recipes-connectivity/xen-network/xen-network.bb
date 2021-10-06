@@ -36,6 +36,20 @@ RDEPENDS_${PN} = " \
     kernel-module-xt-masquerade \
 "
 
+python () {
+    if 'domu' in d.getVar('XT_GUEST_INSTALL', True).split():
+        for pair in d.getVar('XT_GUEST_NETWORK_DOMU', True).split(';'):
+            key, value = pair.split('=')
+            if key == 'ip':
+                d.setVar('DOMU_NET_IP', value)
+
+    if 'doma' in d.getVar('XT_GUEST_INSTALL', True).split():
+        for pair in d.getVar('XT_GUEST_NETWORK_DOMA', True).split(';'):
+            key, value = pair.split('=')
+            if key == 'ip':
+                d.setVar('DOMA_NET_IP', value)
+}
+
 do_install() {
     # Install bridge/network artifacts
     install -d ${D}${systemd_system_unitdir}
@@ -51,13 +65,13 @@ do_install() {
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'doma', 'true', 'false', d)}; then
         echo "\n# ADB to domA" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
-        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 5555 -j DNAT --to-destination 192.168.0.4:5555" \
+        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 5555 -j DNAT --to-destination "${DOMA_NET_IP}":5555" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
     fi
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domu', 'true', 'false', d)}; then
         echo "\n# SSH to domU" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
-        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2025 -j DNAT --to-destination 192.168.0.5:22" \
+        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2025 -j DNAT --to-destination "${DOMU_NET_IP}":22" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
     fi
 
