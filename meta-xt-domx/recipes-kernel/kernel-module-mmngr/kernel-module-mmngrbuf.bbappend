@@ -1,0 +1,1 @@
+PSEUDO_IGNORE_PATHS .= ",${KERNELSRC}/include"
