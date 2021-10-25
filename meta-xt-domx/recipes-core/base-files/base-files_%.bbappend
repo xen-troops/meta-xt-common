@@ -5,5 +5,5 @@ hostname .= "-${XT_DOM_NAME}"
 
 do_install_append () {
         echo "shopt -s checkwinsize" >> ${D}${sysconfdir}/profile
-        echo "eval `resize`> /dev/null" >> ${D}${sysconfdir}/profile
+        echo "eval \`resize\`> /dev/null" >> ${D}${sysconfdir}/profile
 }
