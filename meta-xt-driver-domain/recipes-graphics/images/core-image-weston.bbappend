@@ -11,4 +11,5 @@ IMAGE_INSTALL_append = " \
 	      dnsmasq \
 	      optee-os \
 	      ${@bb.utils.contains('DISTRO_FEATURES', 'ivi-shell', 'displaymanager', '', d)} \
+	      ${@bb.utils.contains('DISTRO_FEATURES', 'vis', 'aos-vis', '', d)} \
 	      "
