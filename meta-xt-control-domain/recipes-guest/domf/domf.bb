@@ -1,0 +1,32 @@
+SUMMARY = "Set of files to run a Fusion domain"
+DESCRIPTION = "A config file, kernel, dtb and scripts for a Fusion domain"
+
+PV = "0.1"
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
+
+inherit externalsrc systemd
+
+SRC_URI = "\
+    file://${XT_DOMF_CONFIG_NAME} \
+    file://domf.service \
+"
+
+FILES_${PN} = " \
+    ${sysconfdir}/xen/domf.cfg \
+    ${libdir}/xen/boot/linux-domf \
+    ${systemd_unitdir}/system/domf.service \
+"
+
+SYSTEMD_SERVICE_${PN} = "domf.service"
+
+do_install() {
+    install -d ${D}${sysconfdir}/xen
+    install -d ${D}${libdir}/xen/boot
+    install -m 0644 ${WORKDIR}/${XT_DOMF_CONFIG_NAME} ${D}${sysconfdir}/xen/domf.cfg
+    install -m 0644 ${S}/Image ${D}${libdir}/xen/boot/linux-domf
+
+    install -d ${D}${systemd_unitdir}/system
+    install -m 0644 ${WORKDIR}/domf.service ${D}${systemd_unitdir}/system/
+}
+

@@ -1,0 +1,13 @@
+[Unit]
+Description=DomF
+Requires=proc-xen.mount
+After=proc-xen.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/xl create /etc/xen/domf.cfg
+ExecStop=/usr/sbin/xl destroy DomF
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
