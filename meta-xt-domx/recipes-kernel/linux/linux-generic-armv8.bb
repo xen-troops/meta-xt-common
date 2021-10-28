@@ -17,8 +17,6 @@ KMETA = "kernel-meta"
 LINUX_KERNEL_TYPE = "tiny"
 LINUX_VERSION ?= "5.10.0"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
-
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
 COMPATIBLE_MACHINE = "generic-armv8-xt"
