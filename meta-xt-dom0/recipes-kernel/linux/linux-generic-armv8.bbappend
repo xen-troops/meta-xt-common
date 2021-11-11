@@ -5,6 +5,6 @@ SRCREV = "${AUTOREV}"
 LINUX_VERSION = "5.10.0"
 
 SRC_URI = " \
-    git://github.com/xen-troops/linux.git;branch=${BRANCH} \
+    git://github.com/xen-troops/linux.git;branch=${BRANCH};protocol=https \
     file://defconfig \
   "
