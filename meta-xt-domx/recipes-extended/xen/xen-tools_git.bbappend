@@ -1,4 +1,4 @@
-require xen-4.16-dunfell.inc
+require xen-source.inc
 
 RDEPENDS_${PN} += "${PN}-devd"
 
