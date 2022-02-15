@@ -18,5 +18,7 @@ do_install_append() {
             -e '$a\default-surface-id=2000000' \
             -e '$a\default-surface-id-max=2001000' \
             -i ${D}/${sysconfdir}/xdg/weston/weston.ini
+        sed -i '/repaint-window=*/c\repaint-window=8' \
+            ${D}/${sysconfdir}/xdg/weston/weston.ini
     fi
 }
