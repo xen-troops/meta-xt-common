@@ -3,7 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 do_install_append() {
     if echo "${DISTRO_FEATURES}" | grep -q "ivi-shell"; then
-        sed -i '/repaint-window=34/c\repaint-window=34\nshell=ivi-shell.so\nmodules=ivi-controller.so' \
+        sed -i '/\[core\]/c\\[core\]\nmodules=ivi-controller.so' \
             ${D}/${sysconfdir}/xdg/weston/weston.ini
         sed -e '$a\\' \
             -e '$a\[ivi-shell]' \
