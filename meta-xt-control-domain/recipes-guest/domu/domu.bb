@@ -7,6 +7,8 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 
 inherit externalsrc systemd
 
+XT_DOMU_CONFIG_NAME ?= "domu-generic.cfg"
+
 SRC_URI = "\
     file://${XT_DOMU_CONFIG_NAME} \
     file://domu-vdevices.cfg \

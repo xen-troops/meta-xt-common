@@ -10,6 +10,8 @@ inherit externalsrc systemd
 # We use custom U-BOOT to run the Android
 RDEPENDS_${PN} = "u-boot-android"
 
+XT_DOMA_CONFIG_NAME ?= "doma-generic.cfg"
+
 SRC_URI = "\
     file://${XT_DOMA_CONFIG_NAME} \
     file://doma.service \
