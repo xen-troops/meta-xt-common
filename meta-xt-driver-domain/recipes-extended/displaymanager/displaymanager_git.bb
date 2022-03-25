@@ -29,7 +29,6 @@ do_install_append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/display-manager.service ${D}${systemd_system_unitdir}
 
-    install -d ${D}${base_prefix}${XT_DIR_NAME}
     install -m 0744 ${WORKDIR}/${DM_CONFIG} ${D}${sysconfdir}/display_manager.cfg
 }
 
