@@ -1,7 +1,7 @@
 [Unit]
 Description=Sound backend
-Requires=proc-xen.mount pulseaudio.service
-After=proc-xen.mount pulseaudio.service
+Requires=proc-xen.mount sound.target
+After=proc-xen.mount sound.target
 
 [Service]
 Type=simple
