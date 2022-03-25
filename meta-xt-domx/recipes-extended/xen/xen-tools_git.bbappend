@@ -2,13 +2,6 @@ require xen-source.inc
 
 RDEPENDS_${PN} += "${PN}-devd"
 
-PACKAGES_append = "\
-    ${PN}-libxenhypfs \
-    ${PN}-libxenhypfs-dev \
-    ${PN}-xenhypfs \
-    ${PN}-xen-access \
-    "
-
 FILES_${PN}-xenhypfs = "\
     ${sbindir}/xenhypfs \
     "
@@ -55,6 +48,15 @@ FILES_${PN}-xencommons_remove = "\
     ${systemd_unitdir}/system/xen-qemu-dom0-disk-backend.service \
 "
 
+FILES_${PN}-tests += "\
+    ${libdir}/xen/bin/test-xenstore \
+    ${libdir}/xen/bin/test-resource \
+"
+
 SYSTEMD_SERVICE_${PN}-xencommons_remove = " \
     xen-qemu-dom0-disk-backend.service \
+"
+
+PACKAGES += "\
+    ${PN}-tests \
 "
