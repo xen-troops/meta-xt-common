@@ -10,7 +10,8 @@ SRCREV = "e9c2fe4c5034a06b159cfd45dbd485755cbaf4c8"
 SRC_URI = "git://github.com/GENIVI/${BPN}.git;protocol=http \
     file://01-ivi-input-controller-update-to-weston-7.patch \
     file://02-ivi-id-agent-update-to-weston-7-header.patch \
-    file://03-ivi-id-agent-update-dependencies-to-build-on-weston-8.patch \
+    file://03-ivi-id-agent-update-dependencies-to-build-on-weston-9.patch \
+    file://04-fix-imclientplatformfunc-initialization.patch \
 "
 
 S = "${WORKDIR}/git"
