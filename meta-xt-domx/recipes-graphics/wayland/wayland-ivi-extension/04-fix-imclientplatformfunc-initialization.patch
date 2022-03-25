@@ -1,0 +1,53 @@
+diff --git a/ivi-layermanagement-api/ilmClient/include/ilm_client_platform.h b/ivi-layermanagement-api/ilmClient/include/ilm_client_platform.h
+index 1fb10af..f281c3e 100644
+--- a/ivi-layermanagement-api/ilmClient/include/ilm_client_platform.h
++++ b/ivi-layermanagement-api/ilmClient/include/ilm_client_platform.h
+@@ -35,7 +35,7 @@ typedef struct _ILM_CLIENT_PLATFORM_FUNC
+     ilmErrorTypes (*destroy)();
+ } ILM_CLIENT_PLATFORM_FUNC;
+
+-ILM_CLIENT_PLATFORM_FUNC gIlmClientPlatformFunc;
++extern ILM_CLIENT_PLATFORM_FUNC gIlmClientPlatformFunc;
+
+ void init_ilmClientPlatformTable();
+
+diff --git a/ivi-layermanagement-api/ilmClient/src/ilm_client_wayland_platform.c b/ivi-layermanagement-api/ilmClient/src/ilm_client_wayland_platform.c
+index 55b1621..12052f8 100644
+--- a/ivi-layermanagement-api/ilmClient/src/ilm_client_wayland_platform.c
++++ b/ivi-layermanagement-api/ilmClient/src/ilm_client_wayland_platform.c
+@@ -27,6 +27,8 @@
+ #include "wayland-util.h"
+ #include "ivi-application-client-protocol.h"
+
++ILM_CLIENT_PLATFORM_FUNC gIlmClientPlatformFunc;
++
+ static ilmErrorTypes wayland_surfaceCreate(t_ilm_nativehandle nativehandle,
+                          t_ilm_int width, t_ilm_int height,
+                          ilmPixelFormat pixelFormat,
+diff --git a/ivi-layermanagement-api/ilmCommon/include/ilm_common_platform.h b/ivi-layermanagement-api/ilmCommon/include/ilm_common_platform.h
+index 4e7b55e..ec49467 100644
+--- a/ivi-layermanagement-api/ilmCommon/include/ilm_common_platform.h
++++ b/ivi-layermanagement-api/ilmCommon/include/ilm_common_platform.h
+@@ -32,7 +32,7 @@ typedef struct _ILM_COMMON_PLATFORM_FUNC
+     ilmErrorTypes (*destroy)();
+ } ILM_COMMON_PLATFORM_FUNC;
+
+-ILM_COMMON_PLATFORM_FUNC gIlmCommonPlatformFunc;
++extern ILM_COMMON_PLATFORM_FUNC gIlmCommonPlatformFunc;
+
+ void init_ilmCommonPlatformTable();
+
+diff --git a/ivi-layermanagement-api/ilmCommon/src/ilm_common_wayland_platform.c b/ivi-layermanagement-api/ilmCommon/src/ilm_common_wayland_platform.c
+index 7470d0d..fa39520 100644
+--- a/ivi-layermanagement-api/ilmCommon/src/ilm_common_wayland_platform.c
++++ b/ivi-layermanagement-api/ilmCommon/src/ilm_common_wayland_platform.c
+@@ -27,6 +27,8 @@
+ #include "wayland-util.h"
+ #include "wayland-client.h"
+
++ILM_COMMON_PLATFORM_FUNC gIlmCommonPlatformFunc;
++
+ static ilmErrorTypes wayland_init(t_ilm_nativedisplay nativedisplay);
+ static t_ilm_nativedisplay wayland_getNativedisplay(void);
+ static t_ilm_bool wayland_isInitialized(void);
+
