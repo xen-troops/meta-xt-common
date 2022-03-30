@@ -34,7 +34,10 @@ do_install_append () {
     rm ${D}/${sysconfdir}/pulse/default.pa
 
     install -d ${D}${systemd_system_unitdir}
+    install -d ${D}${systemd_system_unitdir}/sound.target.wants
     install -m 0644 ${WORKDIR}/pulseaudio.service ${D}${systemd_system_unitdir}
+    ln -sf ${systemd_system_unitdir}/pulseaudio.service \
+        ${D}${systemd_system_unitdir}/sound.target.wants/pulseaudio.service
 
     set_cfg_value ${D}/${sysconfdir}/pulse/client.conf autospawn no
     set_cfg_value ${D}/${sysconfdir}/pulse/client.conf default-server /var/run/pulse/native
