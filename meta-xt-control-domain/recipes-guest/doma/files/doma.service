@@ -1,7 +1,7 @@
 [Unit]
 Description=Android VM
-Requires=backend-ready@displbe.service backend-ready@sndbe.service
-After=backend-ready@displbe.service backend-ready@sndbe.service
+Requires=backend-ready@displbe.service backend-ready@sndbe.service backend-ready@bridge.service
+After=backend-ready@displbe.service backend-ready@sndbe.service backend-ready@bridge.service
 
 [Service]
 Type=oneshot
