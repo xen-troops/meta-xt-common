@@ -18,6 +18,8 @@ S = "${WORKDIR}"
 
 inherit systemd
 
+SYSTEMD_SERVICE_${PN} = "bridge-up-notification.service"
+
 FILES_${PN} = " \
     ${sysconfdir}/systemd/network/eth0.network \
     ${sysconfdir}/systemd/network/xenbr0.netdev \
