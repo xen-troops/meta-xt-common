@@ -1,7 +1,14 @@
 [Unit]
 Description=Android VM
-Requires=backend-ready@displbe.service backend-ready@sndbe.service
-After=backend-ready@displbe.service backend-ready@sndbe.service
+# NOTE 1
+# Pay attention that corresponding part for
+# Dom0's backend-ready@bridge.service is
+# DomD's bridge-up-notification.service.
+# NOTE 2
+# If your product needs additional dependency, consider to use
+# systemd drop-in units instead of modifications in this file.
+Requires=backend-ready@bridge.service
+After=backend-ready@bridge.service
 
 [Service]
 Type=oneshot
