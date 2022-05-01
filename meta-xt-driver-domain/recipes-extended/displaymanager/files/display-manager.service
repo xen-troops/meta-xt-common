@@ -4,7 +4,7 @@ Requires=dbus.service
 After=dbus.service weston@root.service
 
 [Service]
-Environment="XDG_RUNTIME_DIR=/run/user/0"
+EnvironmentFile=/etc/default/weston
 Type=dbus
 BusName=com.epam.DisplayManager
 ExecStartPre=/usr/bin/weston-info
