@@ -1,0 +1,183 @@
+From fa33c79b083649263d82784ac2eabbb04be1c9f0 Mon Sep 17 00:00:00 2001
+Message-Id: <fa33c79b083649263d82784ac2eabbb04be1c9f0.1652261260.git.oleksii_moisieiev@epam.com>
+From: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
+Date: Wed, 11 May 2022 12:16:14 +0300
+Subject: [PATCH] zero-copy: Introduce config parameters to control zcopy
+ functions
+
+This change introdues the following configuration parameters to the
+code:
+WITH_DRM_ZCOPY - enable drm zero-copy (ON by default);
+WTIH_KMS_ZCOPY - enable kms zero-copy (ON by default);
+WTIH_DMABUF_ZCOPY - enable dmabuf zero-copy (ON by default).
+The purpose of these parameters is to give ability to disable certain
+zero-copy functions because there is a posibility to receive wrong
+device_name from wayland during zero-copy initialization.
+This problem was originally met on imx8qm board, where libEGL.so,
+provided as binary by imx-gpu-viv recipe has constant device_name, set
+as /dev/dri/card0. But linux kernel creates display subsystem as
+/dev/dri/card1 because it has minor 1.
+Same implementation was found in Renesas proprietary graphics module -
+device name was set to /dev/dri/card0. But error doesn't appear because
+display-subsystem has minor 0, so it has name card0.
+The solution is to ignore message from Wayland with incorrect name and
+use alternative mechanism, which is dmabuf in case of imx8qm.
+
+Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
+---
+ CMakeLists.txt                         | 12 +++++++++++-
+ src/displayBackend/wayland/Display.cpp | 25 +++++++++++++++++++++++++
+ 2 files changed, 36 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ca62892..02f0af8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,6 +10,9 @@ project(${PROJECT_NAME})
+ 
+ OPTION(WITH_DRM "build with DRM backend" ON)
+ OPTION(WITH_ZCOPY "build with zero copy support" ON)
++OPTION(WITH_DRM_ZCOPY "enable drm zero-copy support" ON)
++OPTION(WITH_KMS_ZCOPY "enable kms zero-copy support" ON)
++OPTION(WITH_DMABUF_ZCOPY "enable dmabuf zero-copy support" ON)
+ OPTION(WITH_WAYLAND "build with wayland backend" ON)
+ OPTION(WITH_IVI_EXTENSION "build with wayland IVI Extension" ON)
+ OPTION(WITH_INPUT "build with input backend" ON)
+@@ -25,6 +28,9 @@ message(STATUS)
+ message(STATUS "WITH_DOC                      = ${WITH_DOC}")
+ message(STATUS "WITH_DRM                      = ${WITH_DRM}")
+ message(STATUS "WITH_ZCOPY                    = ${WITH_ZCOPY}")
++message(STATUS "WITH_DRM_ZCOPY                = ${WITH_DRM_ZCOPY}")
++message(STATUS "WITH_KMS_ZCOPY                = ${WITH_KMS_ZCOPY}")
++message(STATUS "WITH_DMABUF_ZCOPY             = ${WITH_DMABUF_ZCOPY}")
+ message(STATUS "WITH_WAYLAND                  = ${WITH_WAYLAND}")
+ message(STATUS "WITH_IVI_EXTENSION            = ${WITH_IVI_EXTENSION}")
+ message(STATUS "WITH_INPUT                    = ${WITH_INPUT}")
+@@ -58,6 +64,10 @@ if(NOT WITH_DRM AND WITH_ZCOPY)
+ 	message(FATAL_ERROR "Can't enable zero copy without DRM.")
+ endif()
+ 
++if (WITH_ZCOPY AND NOT WITH_DRM_ZCOPY AND NOT WITH_KMS_ZCOPY AND NOT WITH_DMABUF_ZCOPY)
++    message(FATAL_ERROR "At least one zero-copy function should be enabled")
++endif()
++
+ ################################################################################
+ # Compiler flags
+ ################################################################################
+@@ -169,4 +179,4 @@ else()
+ 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+ 		COMMENT "Generating API documentation with Doxygen" VERBATIM
+ 	)
+-endif()
+\ No newline at end of file
++endif()
+diff --git a/src/displayBackend/wayland/Display.cpp b/src/displayBackend/wayland/Display.cpp
+index f75448c..0e879f4 100644
+--- a/src/displayBackend/wayland/Display.cpp
++++ b/src/displayBackend/wayland/Display.cpp
+@@ -184,23 +184,29 @@ DisplayBufferPtr Display::createDisplayBuffer(
+ 
+ #ifdef WITH_ZCOPY
+ 
++#ifdef WITH_DRM_ZCOPY
+ 	if (mWaylandDrm)
+ 	{
+ 		return mWaylandDrm->createDumb(width, height, bpp, offset,
+ 									   domId, refs, allocRefs);
+ 	}
++#endif
+ 
++#ifdef WITH_KMS_ZCOPY
+ 	if (mWaylandKms)
+ 	{
+ 		return mWaylandKms->createDumb(width, height, bpp, offset,
+ 									   domId, refs, allocRefs);
+ 	}
++#endif
+ 
++#ifdef WITH_DMABUF_ZCOPY
+ 	if (mWaylandLinuxDmabuf)
+ 	{
+ 		return mWaylandLinuxDmabuf->createDumb(width, height, bpp, offset,
+ 											   domId, refs, allocRefs);
+ 	}
++#endif
+ 
+ #endif
+ 
+@@ -221,24 +227,31 @@ FrameBufferPtr Display::createFrameBuffer(DisplayBufferPtr displayBuffer,
+ 
+ #ifdef WITH_ZCOPY
+ 
++#ifdef WITH_DRM_ZCOPY
+ 	if (mWaylandDrm)
+ 	{
+ 		return mWaylandDrm->createDrmBuffer(displayBuffer, width, height,
+ 											pixelFormat);
+ 	}
++#endif
+ 
++#ifdef WITH_KMS_ZCOPY
+ 	if (mWaylandKms)
+ 	{
+ 		return mWaylandKms->createKmsBuffer(displayBuffer, width, height,
+ 											pixelFormat);
+ 	}
++#endif
++
+ 
++#ifdef WITH_DMABUF_ZCOPY
+ 	if (mWaylandLinuxDmabuf)
+ 	{
+ 		return mWaylandLinuxDmabuf->createLinuxDmabufBuffer(displayBuffer,
+ 															width, height,
+ 															pixelFormat);
+ 	}
++#endif
+ 
+ #endif
+ 
+@@ -453,18 +466,24 @@ void Display::registryHandler(wl_registry *registry, uint32_t id,
+ #ifdef WITH_ZCOPY
+ 	if (!mDisableZCopy)
+ 	{
++#ifdef WITH_DRM_ZCOPY
+ 		if (interface == "wl_drm")
+ 		{
+ 			mWaylandDrm.reset(new WaylandDrm(registry, id, version));
+ 		}
++#endif
++#ifdef WITH_KMS_ZCOPY
+ 		if (interface == "wl_kms")
+ 		{
+ 			mWaylandKms.reset(new WaylandKms(registry, id, version));
+ 		}
++#endif
++#ifdef WITH_DMABUF_ZCOPY
+ 		if (interface == "zwp_linux_dmabuf_v1")
+ 		{
+ 			mWaylandLinuxDmabuf.reset(new WaylandLinuxDmabuf(registry, id, version));
+ 		}
++#endif
+ 	}
+ #endif
+ }
+@@ -524,9 +543,15 @@ void Display::release()
+ 	mSeat.reset();
+ #endif
+ #ifdef WITH_ZCOPY
++#ifdef WITH_DRM_ZCOPY
+ 	mWaylandDrm.reset();
++#endif
++#ifdef WITH_KMS_ZCOPY
+ 	mWaylandKms.reset();
++#endif
++#ifdef WITH_DMABUF_ZCOPY
+ 	mWaylandLinuxDmabuf.reset();
++#endif
+ #endif
+ 
+ 	if (mWlRegistry)
+-- 
+2.27.0
+
