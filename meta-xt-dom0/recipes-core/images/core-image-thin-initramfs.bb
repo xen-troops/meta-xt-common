@@ -4,7 +4,7 @@ configured. RAM-based Initial Root Filesystem (initramfs) is used to avoid \
 need for accessing block/mtd devices. Shall contain kernel images for other \
 VMs."
 
-IMAGE_INSTALL = "packagegroup-core-boot ${CORE_IMAGE_EXTRA_INSTALL}"
+IMAGE_INSTALL = "packagegroup-core-boot ${CORE_IMAGE_EXTRA_INSTALL} xen-tools-xenstat"
 
 IMAGE_LINGUAS = ""
 
