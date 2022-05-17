@@ -5,8 +5,9 @@ UBOOT_CONFIG[doma] = "xenguest_arm64_android_defconfig"
 UBOOT_CONFIG = "doma"
 
 SRCREV = "${AUTOREV}"
+UBOOT_SOURCE ??= "git://github.com/xen-troops/u-boot.git;protocol=https;branch=android-master;"
 SRC_URI = "\
-    git://github.com/xen-troops/u-boot.git;protocol=https;branch=android-master; \
+    ${UBOOT_SOURCE} \
 "
 
 FILES_${PN} = " \
