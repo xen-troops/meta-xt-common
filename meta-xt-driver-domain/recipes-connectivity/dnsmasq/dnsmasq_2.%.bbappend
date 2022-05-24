@@ -24,6 +24,9 @@ do_install_append() {
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domu', 'true', 'false', d)}; then
         echo "dhcp-host=08:00:27:ff:cb:cf,domu,192.168.0.5,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
     fi
+    if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domf', 'true', 'false', d)}; then
+        echo "dhcp-host=08:00:27:ff:cb:cd,domf,192.168.0.3,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
+    fi
 
     # Use resolve.conf provided by systemd-resolved
     echo "resolv-file=/run/systemd/resolve/resolv.conf" >> ${D}${sysconfdir}/dnsmasq.conf
