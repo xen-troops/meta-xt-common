@@ -2,13 +2,17 @@
 Description=Android VM
 # NOTE 1
 # Pay attention that corresponding part for
-# Dom0's backend-ready@bridge.service is
-# DomD's bridge-up-notification.service.
+# Dom0's backend-ready@block.service is
+# DomD's block-up-notification.service.
 # NOTE 2
 # If your product needs additional dependency, consider to use
 # systemd drop-in units instead of modifications in this file.
-Requires=backend-ready@bridge.service
-After=backend-ready@bridge.service
+# NOTE 3
+# Dependencies (After=, Requires=) cannot be reset to an empty list,
+# so dependencies can only be added in drop-ins. If you want to
+# remove dependencies, you have to override the entire unit.
+Requires=backend-ready@block.service
+After=backend-ready@block.service
 
 [Service]
 Type=oneshot
