@@ -4,9 +4,7 @@ IMAGE_INSTALL_append = " \
 	      xen-tools-scripts-network \
 	      xen-tools-scripts-block \
 	      xen-tools-xenstore \
-	      sndbe \
 	      displbe \
-	      camerabe \
 	      xen-network \
 	      dnsmasq \
 	      optee-os \
