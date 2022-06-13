@@ -7,6 +7,8 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 
 inherit externalsrc systemd
 
+EXTERNALSRC_SYMLINKS = ""
+
 # We use custom U-BOOT to run the Android
 RDEPENDS_${PN} = "u-boot-android"
 
