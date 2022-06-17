@@ -1,0 +1,53 @@
+From 2934f78b258f7a4e1d6bd77b7c9213dd3dde5a03 Mon Sep 17 00:00:00 2001
+From: Mykyta Poturai <mykyta_poturai@epam.com>
+Date: Wed, 15 Jun 2022 10:51:23 +0300
+Subject: [PATCH] smmu: Fix guest domain restart
+
+Move arm_smmu_master_alloc_smes from arm_smmu_add_device to
+arm_smmu_attach_dev. The reason for this is that add_device is called
+only once at the beginning of a lifetime of each device, but
+arm_smmu_master_free_smes is called in arm_smmu_detach_dev which happens
+every time the domain is destroyed. So after restarting the guest domain
+smes are freed and never allocated again.
+
+Signed-off-by: Mykyta Poturai <mykyta_poturai@epam.com>
+---
+ xen/drivers/passthrough/arm/smmu.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/xen/drivers/passthrough/arm/smmu.c b/xen/drivers/passthrough/arm/smmu.c
+index 18cc9e941f..e76bd504ed 100644
+--- a/xen/drivers/passthrough/arm/smmu.c
++++ b/xen/drivers/passthrough/arm/smmu.c
+@@ -1699,6 +1699,10 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	if (!cfg)
+ 		return -ENODEV;
+ 
++	ret = arm_smmu_master_alloc_smes(dev);
++	if (ret)
++		return ret;
++
+ 	return arm_smmu_domain_add_master(smmu_domain, cfg);
+ }
+ 
+@@ -2042,7 +2046,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 	struct arm_smmu_master_cfg *cfg;
+ 	struct iommu_group *group;
+ 	void (*releasefn)(void *) = NULL;
+-	int ret;
++	int ret = 0;
+ 
+ 	smmu = find_smmu_for_device(dev);
+ 	if (!smmu)
+@@ -2094,7 +2098,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 	iommu_group_add_device(group, dev);
+ 	iommu_group_put(group);
+ 
+-	return arm_smmu_master_alloc_smes(dev);
++	return ret;
+ }
+ 
+ #if 0 /* Xen: We don't support remove device for now. Will be useful for PCI */
+-- 
+2.25.1
+
