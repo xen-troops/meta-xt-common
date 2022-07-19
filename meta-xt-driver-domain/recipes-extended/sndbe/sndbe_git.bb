@@ -11,7 +11,11 @@ PACKAGECONFIG[alsa] = "-DWITH_ALSA=ON,-DWITH_ALSA=OFF,alsa-lib,alsa-server"
 
 DEPENDS = "libxenbe libconfig git-native"
 
-RDEPENDS_${PN} = "libxenbe libconfig"
+RDEPDENDS_${PN} += " \
+    libxenbe \
+    libconfig \
+    xen-tools-xenstore \
+"
 
 SRC_URI = " \
     git://github.com/xen-troops/snd_be.git;protocol=https;branch=yocto-v4.7.0-xt0.1 \

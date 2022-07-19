@@ -22,6 +22,10 @@ SRC_URI = " \
 
 SRCREV = "${AUTOREV}"
 
+RDEPDENDS_${PN} += " \
+    xen-tools-xenstore \
+"
+
 EXTRA_OECMAKE_append_rcar = " -DWITH_DOC=OFF"
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

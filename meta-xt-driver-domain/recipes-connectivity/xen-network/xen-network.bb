@@ -36,6 +36,7 @@ RDEPENDS_${PN} = " \
     kernel-module-xt-nat \
     kernel-module-xt-tcpudp \
     kernel-module-xt-masquerade \
+    xen-tools-xenstore \
 "
 
 do_install() {

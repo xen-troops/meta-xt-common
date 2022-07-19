@@ -20,6 +20,10 @@ inherit systemd pkgconfig autotools-brokensep
 
 SYSTEMD_SERVICE_${PN} = "virtio-disk.service"
 
+RDEPDENDS_${PN} += " \
+    xen-tools-xenstore \
+"
+
 do_install_append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/virtio-disk.service ${D}${systemd_system_unitdir}
