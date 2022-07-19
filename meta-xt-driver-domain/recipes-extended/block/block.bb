@@ -13,6 +13,10 @@ inherit systemd
 
 SYSTEMD_SERVICE_${PN} = "block-up-notification.service"
 
+RDEPDENDS_${PN} += " \
+    xen-tools-xenstore \
+"
+
 FILES_${PN} = " \
     ${systemd_system_unitdir}/block-up-notification.service \
 "

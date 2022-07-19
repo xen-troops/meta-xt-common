@@ -22,6 +22,10 @@ DEPENDS = "libxenbe libconfig libdrm wayland git-native wayland-ivi-extension wa
 
 EXTRA_OECMAKE = " -DWITH_DOC=OFF -DWITH_DRM=ON -DWITH_ZCOPY=ON -DWITH_WAYLAND=ON -DWITH_IVI_EXTENSION=ON -DWITH_INPUT=ON"
 
+RDEPDENDS_${PN} += " \
+    xen-tools-xenstore \
+"
+
 FILES_${PN} += " \
     ${systemd_system_unitdir}/displbe.service \
 "
