@@ -1,7 +1,8 @@
 [Unit]
 Description=Camera backend
 Requires=proc-xen.mount
-After=proc-xen.mount
+Wants=xenstored.service
+After=proc-xen.mount xenstored.service
 
 [Service]
 Type=simple

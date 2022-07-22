@@ -26,6 +26,10 @@ RDEPDENDS_${PN} += " \
     xen-tools-xenstore \
 "
 
+RRECOMMENDS_${PN} += " \
+    virtual/xenstored \
+"
+
 FILES_${PN} += " \
     ${systemd_system_unitdir}/displbe.service \
 "

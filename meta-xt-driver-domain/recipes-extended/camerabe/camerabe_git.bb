@@ -26,6 +26,10 @@ RDEPDENDS_${PN} += " \
     xen-tools-xenstore \
 "
 
+RRECOMMENDS_${PN} += " \
+    virtual/xenstored \
+"
+
 EXTRA_OECMAKE_append_rcar = " -DWITH_DOC=OFF"
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
