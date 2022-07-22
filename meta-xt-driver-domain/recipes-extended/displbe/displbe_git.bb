@@ -10,7 +10,7 @@ inherit pkgconfig cmake  systemd
 SYSTEMD_SERVICE_${PN} = "displbe.service"
 
 SRC_URI = " \
-    git://github.com/xen-troops/displ_be.git;protocol=https;branch=yocto-v4.7.0-xt0.1 \
+    git://github.com/xen-troops/displ_be.git;protocol=https;branch=master \
     file://displbe.service \
 "
 
