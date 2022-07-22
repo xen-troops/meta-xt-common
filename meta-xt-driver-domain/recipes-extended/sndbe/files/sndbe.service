@@ -1,7 +1,8 @@
 [Unit]
 Description=Sound backend
 Requires=proc-xen.mount sound.target
-After=proc-xen.mount sound.target
+Wants=xenstored.service
+After=proc-xen.mount sound.target xenstored.service
 
 [Service]
 Type=simple

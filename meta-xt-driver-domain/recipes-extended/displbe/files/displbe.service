@@ -1,6 +1,7 @@
 [Unit]
 Description=Display backend
-After=weston@%u.service
+Wants=xenstored.service
+After=xenstored.service weston@%u.service
 
 [Service]
 Type=simple

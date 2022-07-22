@@ -17,6 +17,10 @@ RDEPDENDS_${PN} += " \
     xen-tools-xenstore \
 "
 
+RRECOMMENDS_${PN} += " \
+    virtual/xenstored \
+"
+
 SRC_URI = " \
     git://github.com/xen-troops/snd_be.git;protocol=https;branch=yocto-v4.7.0-xt0.1 \
     file://sndbe.service \

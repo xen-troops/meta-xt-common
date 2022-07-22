@@ -17,6 +17,10 @@ RDEPDENDS_${PN} += " \
     xen-tools-xenstore \
 "
 
+RRECOMMENDS_${PN} += " \
+    virtual/xenstored \
+"
+
 FILES_${PN} = " \
     ${systemd_system_unitdir}/block-up-notification.service \
 "
