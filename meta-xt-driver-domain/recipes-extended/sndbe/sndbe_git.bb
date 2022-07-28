@@ -8,6 +8,7 @@ inherit pkgconfig cmake systemd
 PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'pulseaudio alsa', d)}"
 PACKAGECONFIG[pulseaudio] = "-DWITH_PULSE=ON,-DWITH_PULSE=OFF,pulseaudio,pulseaudio-server"
 PACKAGECONFIG[alsa] = "-DWITH_ALSA=ON,-DWITH_ALSA=OFF,alsa-lib,alsa-server"
+PACKAGECONFIG[doc] = "-DWITH_DOC=ON,-DWITH_DOC=OFF,doxygen-native"
 
 DEPENDS = "libxenbe libconfig git-native"
 
@@ -30,8 +31,6 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=a23a74b3f4caf9616230789d94217acb"
 S = "${WORKDIR}/git"
 
 SRCREV = "${AUTOREV}"
-
-EXTRA_OECMAKE = " -DWITH_DOC=OFF"
 
 SYSTEMD_SERVICE_${PN} = "sndbe.service"
 
