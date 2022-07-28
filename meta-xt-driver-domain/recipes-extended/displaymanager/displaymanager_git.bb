@@ -20,7 +20,10 @@ SRC_URI = " \
 S = "${WORKDIR}/git"
 SRCREV = "${AUTOREV}"
 
-EXTRA_OECMAKE_append = " -DWITH_DOC=OFF -DCMAKE_BUILD_TYPE=Release"
+PACKAGECONFIG ??= ""
+PACKAGECONFIG[doc] = "-DWITH_DOC=ON,-DWITH_DOC=OFF,doxygen-native"
+
+EXTRA_OECMAKE_append = " -DCMAKE_BUILD_TYPE=Release"
 
 do_install_append() {
     install -d ${D}${sysconfdir}/dbus-1/system.d
