@@ -30,7 +30,8 @@ RRECOMMENDS_${PN} += " \
     virtual/xenstored \
 "
 
-EXTRA_OECMAKE_append_rcar = " -DWITH_DOC=OFF"
+PACKAGECONFIG ??= ""
+PACKAGECONFIG[doc] = "-DWITH_DOC=ON,-DWITH_DOC=OFF,doxygen-native"
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
