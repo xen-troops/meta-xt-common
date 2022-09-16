@@ -15,7 +15,8 @@ Description=Zephyr OS as guest
 [Service]
 Type=oneshot
 ExecStart=/usr/sbin/xl create /etc/xen/domz.cfg
-ExecStop=/usr/sbin/xl destroy DomZ
+ExecStop=/usr/sbin/xl shutdown -w DomZ
+ExecStopPost=/usr/sbin/xl destroy DomZ
 RemainAfterExit=true
 
 [Install]
