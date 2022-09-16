@@ -6,7 +6,8 @@ After=proc-xen.mount
 [Service]
 Type=oneshot
 ExecStart=/usr/sbin/xl create /etc/xen/domd.cfg
-ExecStop=/usr/sbin/xl destroy DomD
+ExecStop=/usr/sbin/xl shutdown -w DomD
+ExecStopPost=/usr/sbin/xl destroy DomD
 RemainAfterExit=true
 
 [Install]

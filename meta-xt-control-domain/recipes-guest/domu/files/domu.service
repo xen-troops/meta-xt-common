@@ -6,7 +6,8 @@ After=backend-ready@displbe.service backend-ready@sndbe.service
 [Service]
 Type=oneshot
 ExecStart=/usr/sbin/xl create /etc/xen/domu.cfg
-ExecStop=/usr/sbin/xl destroy DomU
+ExecStop=/usr/sbin/xl shutdown -w DomU
+ExecStopPost=/usr/sbin/xl destroy DomU
 RemainAfterExit=true
 
 [Install]
