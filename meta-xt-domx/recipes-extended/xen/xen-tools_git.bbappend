@@ -2,6 +2,8 @@ require xen-source.inc
 
 RDEPENDS_${PN} += "${PN}-devd"
 
+RDEPENDS_${PN}_remove = "${PN}-xendomains"
+
 PACKAGES_append = "\
     ${PN}-libxenhypfs \
     ${PN}-libxenhypfs-dev \
