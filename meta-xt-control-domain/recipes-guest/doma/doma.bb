@@ -13,9 +13,13 @@ EXTERNALSRC_SYMLINKS = ""
 RDEPENDS_${PN} = "u-boot-android"
 
 SRC_URI = "\
-    file://${XT_DOMA_CONFIG_NAME} \
     file://doma.service \
 "
+
+python () {
+    if d.getVar('XT_DOMA_CONFIG_NAME'):
+        d.appendVar('SRC_URI', ' file://${XT_DOMA_CONFIG_NAME} ')
+}
 
 FILES_${PN} = " \
     ${sysconfdir}/xen/doma.cfg \
