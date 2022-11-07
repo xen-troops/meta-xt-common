@@ -7,7 +7,6 @@ IMAGE_INSTALL_append = " \
 	      displbe \
 	      xen-network \
 	      dnsmasq \
-	      optee-os \
               block \
 	      ${@bb.utils.contains('DISTRO_FEATURES', 'ivi-shell', 'displaymanager', '', d)} \
 	      "
