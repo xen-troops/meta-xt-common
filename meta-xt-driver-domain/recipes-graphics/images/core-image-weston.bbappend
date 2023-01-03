@@ -8,5 +8,7 @@ IMAGE_INSTALL_append = " \
     xen-network \
     dnsmasq \
     block \
+    glmark2 \
+    kmscube \
     ${@bb.utils.contains('DISTRO_FEATURES', 'ivi-shell', 'displaymanager', '', d)} \
 "
