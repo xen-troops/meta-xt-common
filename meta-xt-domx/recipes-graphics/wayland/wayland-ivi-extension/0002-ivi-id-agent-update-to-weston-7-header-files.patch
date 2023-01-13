@@ -1,7 +1,7 @@
-From 5abb2b497e0153210d41ec3685dc0152587625fa Mon Sep 17 00:00:00 2001
+From 7b7a5e96388f2431e750583a035962d261292b43 Mon Sep 17 00:00:00 2001
 From: Rajendraprasad K J <KarammelJayakumar.Rajendraprasad@in.bosch.com>
 Date: Mon, 6 Jan 2020 06:45:11 -0500
-Subject: [PATCH] ivi-id-agent: update to weston 7 header files
+Subject: [PATCH 2/6] ivi-id-agent: update to weston 7 header files
 
 update the header file path.
 
@@ -28,3 +28,6 @@ index 8f0c199..b80e2a4 100644
  #include <weston/ivi-layout-export.h>
  
  #ifndef INVALID_ID
+-- 
+2.17.1
+
