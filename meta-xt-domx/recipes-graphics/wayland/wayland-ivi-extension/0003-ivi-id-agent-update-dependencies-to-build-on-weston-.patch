@@ -1,7 +1,7 @@
-From b99082adfaf250b15f03345cdf1b433fb1575581 Mon Sep 17 00:00:00 2001
+From 46ef7140611d684d1dbecd866608333e67a1985e Mon Sep 17 00:00:00 2001
 From: Rajendraprasad K J <KarammelJayakumar.Rajendraprasad@in.bosch.com>
 Date: Mon, 6 Jan 2020 06:45:54 -0500
-Subject: [PATCH] ivi-id-agent: update dependencies to build on weston 8
+Subject: [PATCH 3/6] ivi-id-agent: update dependencies to build on weston 8
 
 upgrade libweston-desktop version.
 
@@ -14,7 +14,7 @@ Signed-off-by: Gowtham Tammana <g-tammana@ti.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/ivi-id-agent-modules/ivi-id-agent/CMakeLists.txt b/ivi-id-agent-modules/ivi-id-agent/CMakeLists.txt
-index 3e604a5..ff47808 100644
+index 3e604a5..4f285c2 100644
 --- a/ivi-id-agent-modules/ivi-id-agent/CMakeLists.txt
 +++ b/ivi-id-agent-modules/ivi-id-agent/CMakeLists.txt
 @@ -25,7 +25,7 @@ find_package(PkgConfig REQUIRED)
@@ -26,3 +26,6 @@ index 3e604a5..ff47808 100644
  
  find_package(Threads REQUIRED)
  
+-- 
+2.17.1
+
