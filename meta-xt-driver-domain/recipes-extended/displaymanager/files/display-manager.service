@@ -1,9 +1,10 @@
 [Unit]
 Description=EPAM Display Manager
 Requires=dbus.service
-After=dbus.service weston@root.service
+After=dbus.service weston.service
 
 [Service]
+Environment=WAYLAND_DISPLAY=wayland-1
 EnvironmentFile=/etc/default/weston
 Type=dbus
 BusName=com.epam.DisplayManager
@@ -13,4 +14,4 @@ Restart=on-failure
 RestartSec=4
 
 [Install]
-WantedBy=weston@root.service
+WantedBy=weston.service
