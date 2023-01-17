@@ -1,7 +1,7 @@
 [Unit]
 Description=EPAM Display Manager
 Requires=dbus.service
-After=dbus.service weston@root.service
+After=dbus.service weston.service
 
 [Service]
 EnvironmentFile=/etc/default/weston
@@ -13,4 +13,4 @@ Restart=on-failure
 RestartSec=4
 
 [Install]
-WantedBy=weston@root.service
+WantedBy=weston.service
