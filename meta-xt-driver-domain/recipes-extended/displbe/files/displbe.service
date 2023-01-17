@@ -1,10 +1,11 @@
 [Unit]
 Description=Display backend
 Wants=xenstored.service
-After=xenstored.service weston@%u.service
+After=xenstored.service weston.service
 
 [Service]
 Type=simple
+Environment=WAYLAND_DISPLAY=wayland-1
 EnvironmentFile=/etc/default/weston
 TimeoutStartSec=1
 ExecStart=/usr/bin/displ_be
@@ -15,4 +16,4 @@ Restart=always
 RestartSec=4
 
 [Install]
-WantedBy=weston@root.service
+WantedBy=weston.service
