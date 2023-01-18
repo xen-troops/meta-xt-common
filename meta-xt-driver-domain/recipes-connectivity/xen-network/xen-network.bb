@@ -8,7 +8,7 @@ SRC_URI = " \
     file://bridge-up-notification.service \
     file://eth0.network \
     file://xenbr0.netdev \
-    file://xenbr0.network \
+    file://60-xenbr0.network \
     file://xenbr0-systemd-networkd.conf \
     file://port-forward-systemd-networkd.conf \
     file://systemd-networkd-wait-online.conf \
@@ -23,7 +23,7 @@ SYSTEMD_SERVICE:${PN} = "bridge-up-notification.service"
 FILES:${PN} = " \
     ${sysconfdir}/systemd/network/eth0.network \
     ${sysconfdir}/systemd/network/xenbr0.netdev \
-    ${sysconfdir}/systemd/network/xenbr0.network \
+    ${sysconfdir}/systemd/network/60-xenbr0.network \
     ${sysconfdir}/systemd/system/systemd-networkd.service.d/xenbr0-systemd-networkd.conf \
     ${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf \
     ${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d/systemd-networkd-wait-online.conf \
