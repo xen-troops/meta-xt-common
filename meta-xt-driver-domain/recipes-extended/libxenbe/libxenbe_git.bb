@@ -3,7 +3,12 @@ SECTION = "libs"
 LICENSE = "GPL-2.0-only"
 PR = "r0"
 
-SRC_URI = "git://github.com/xen-troops/libxenbe.git;protocol=https;branch=master"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+
+SRC_URI = "\
+    git://github.com/xen-troops/libxenbe.git;protocol=https;branch=master \
+    file://0001-TEMP-Fix-build-issue-on-kirkstone.patch \
+"
 SRCREV = "${AUTOREV}"
 
 DEPENDS = "xen-tools"

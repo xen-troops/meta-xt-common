@@ -1,0 +1,49 @@
+From 13c92eaa1d9378c193c4243dac5837ea6ab7a6c6 Mon Sep 17 00:00:00 2001
+From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Date: Fri, 13 Jan 2023 22:11:54 +0200
+Subject: [PATCH] [TEMP] Fix build issue on kirkstone
+
+The temp solution was found at:
+https://gitweb.gentoo.org/repo/gentoo.git/commit/?id=7571d22a49cdce0626968667e68638ff2111471e
+
+The proper fix likely would be to stop using Catch v1.
+
+Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+---
+ tests/catch.hpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/tests/catch.hpp b/tests/catch.hpp
+index 79036a4..1b37a00 100644
+--- a/tests/catch.hpp
++++ b/tests/catch.hpp
+@@ -6388,7 +6388,7 @@ namespace Catch {
+         static bool isSet;
+         static struct sigaction oldSigActions [sizeof(signalDefs)/sizeof(SignalDefs)];
+         static stack_t oldSigStack;
+-        static char altStackMem[SIGSTKSZ];
++        static char altStackMem[32768];
+ 
+         static void handleSignal( int sig ) {
+             std::string name = "<unknown signal>";
+@@ -6408,7 +6408,7 @@ namespace Catch {
+             isSet = true;
+             stack_t sigStack;
+             sigStack.ss_sp = altStackMem;
+-            sigStack.ss_size = SIGSTKSZ;
++            sigStack.ss_size = 32768;
+             sigStack.ss_flags = 0;
+             sigaltstack(&sigStack, &oldSigStack);
+             struct sigaction sa = { 0 };
+@@ -6439,7 +6439,7 @@ namespace Catch {
+     bool FatalConditionHandler::isSet = false;
+     struct sigaction FatalConditionHandler::oldSigActions[sizeof(signalDefs)/sizeof(SignalDefs)] = {};
+     stack_t FatalConditionHandler::oldSigStack = {};
+-    char FatalConditionHandler::altStackMem[SIGSTKSZ] = {};
++    char FatalConditionHandler::altStackMem[32768] = {};
+ 
+ } // namespace Catch
+ 
+-- 
+2.34.1
+
