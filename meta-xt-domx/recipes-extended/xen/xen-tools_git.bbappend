@@ -1,50 +1,50 @@
 require xen-source.inc
 
-RDEPENDS_${PN} += "${PN}-devd"
+RDEPENDS:${PN} += "${PN}-devd"
 
-RDEPENDS_${PN}_remove = "${PN}-xendomains"
+RDEPENDS:${PN}:remove = "${PN}-xendomains"
 
-PACKAGES_append = "\
+PACKAGES:append = "\
     ${PN}-libxenhypfs \
     ${PN}-libxenhypfs-dev \
     ${PN}-xenhypfs \
     ${PN}-xen-access \
     "
 
-FILES_${PN}-xenhypfs = "\
+FILES:${PN}-xenhypfs = "\
     ${sbindir}/xenhypfs \
     "
 
-FILES_${PN}-libxenhypfs = "${libdir}/libxenhypfs.so.*"
-FILES_${PN}-libxenhypfs-dev = " \
+FILES:${PN}-libxenhypfs = "${libdir}/libxenhypfs.so.*"
+FILES:${PN}-libxenhypfs-dev = " \
     ${libdir}/libxenhypfs.so \
     ${libdir}/pkgconfig/xenhypfs.pc \
     "
 
-FILES_${PN}-libxendevicemodel = "${libdir}/libxendevicemodel.so.*"
-FILES_${PN}-libxendevicemodel-dev = " \
+FILES:${PN}-libxendevicemodel = "${libdir}/libxendevicemodel.so.*"
+FILES:${PN}-libxendevicemodel-dev = " \
     ${libdir}/libxendevicemodel.so \
     ${libdir}/pkgconfig/xendevicemodel.pc \
     "
 
-FILES_${PN}-misc_append = "\
+FILES:${PN}-misc:append = "\
     ${libdir}/xen/bin/depriv-fd-checker \
     ${bindir}/vchan-socket-proxy \
     "
 
-FILES_${PN}-xl += "\
+FILES:${PN}-xl += "\
     ${sysconfdir}/bash_completion.d \
     "
 
-FILES_${PN}-xl-examples += "\
+FILES:${PN}-xl-examples += "\
     ${sysconfdir}/xen/xlexample.pvhlinux \
     "
 
-FILES_${PN}-xen-access += "\
+FILES:${PN}-xen-access += "\
     ${sbindir}/xen-access \
     "
 
-do_install_append() {
+do_install:append() {
     # FIXME: this is to fix QA Issue with pygrub:
     # ... pygrub maximum shebang size exceeded, the maximum size is 128. [shebang-size]
     rm -f ${D}/${bindir}/pygrub
@@ -53,10 +53,10 @@ do_install_append() {
     rm -f ${D}/${systemd_unitdir}/system/xen-qemu-dom0-disk-backend.service
 }
 
-FILES_${PN}-xencommons_remove = "\
+FILES:${PN}-xencommons:remove = "\
     ${systemd_unitdir}/system/xen-qemu-dom0-disk-backend.service \
 "
 
-SYSTEMD_SERVICE_${PN}-xencommons_remove = " \
+SYSTEMD_SERVICE:${PN}-xencommons:remove = " \
     xen-qemu-dom0-disk-backend.service \
 "

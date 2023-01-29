@@ -10,7 +10,7 @@ SRC_URI = "\
     ${UBOOT_SOURCE} \
 "
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${libdir}/xen/boot/u-boot-doma \
 "
 

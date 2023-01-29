@@ -1,5 +1,5 @@
 require xen-source.inc
 
-do_configure_append() {
+do_configure:append() {
     oe_runmake xt_defconfig
 }

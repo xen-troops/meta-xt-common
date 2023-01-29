@@ -3,7 +3,7 @@
 XT_DOM_NAME ??= "domx"
 hostname .= "-${XT_DOM_NAME}"
 
-do_install_append () {
+do_install:append () {
         echo "shopt -s checkwinsize" >> ${D}${sysconfdir}/profile
         echo "eval \`resize\`> /dev/null" >> ${D}${sysconfdir}/profile
 }

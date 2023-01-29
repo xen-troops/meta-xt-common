@@ -1,6 +1,6 @@
 DESCRIPTION = "virtio-disk"
 SECTION = "extras"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 PR = "r0"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
@@ -11,28 +11,28 @@ DEPENDS = "xen-tools"
 
 SRCREV = "${AUTOREV}"
 
-SRC_URI_append = " \
+SRC_URI:append = " \
     git://github.com/xen-troops/virtio-disk.git;protocol=https;branch=ioreq_ml3 \
     file://virtio-disk.service \
 "
 
 inherit systemd pkgconfig autotools-brokensep
 
-SYSTEMD_SERVICE_${PN} = "virtio-disk.service"
+SYSTEMD_SERVICE:${PN} = "virtio-disk.service"
 
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     xen-tools-xenstore \
 "
 
-RRECOMMENDS_${PN} += " \
+RRECOMMENDS:${PN} += " \
     virtual/xenstored \
 "
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/virtio-disk.service ${D}${systemd_system_unitdir}
 }
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${systemd_system_unitdir}/virtio-disk.service \
 "

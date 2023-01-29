@@ -1,11 +1,11 @@
 DESCRIPTION = "displaymanager"
 SECTION = "extras"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 PR = "r0"
 
 inherit pkgconfig cmake systemd
 
-SYSTEMD_SERVICE_${PN} = "display-manager.service"
+SYSTEMD_SERVICE:${PN} = "display-manager.service"
 
 DEPENDS = "libconfig wayland-ivi-extension glib-2.0 glib-2.0-native git-native xt-log"
 
@@ -22,9 +22,9 @@ SRCREV = "${AUTOREV}"
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[doc] = "-DWITH_DOC=ON,-DWITH_DOC=OFF,doxygen-native"
 
-EXTRA_OECMAKE_append = " -DCMAKE_BUILD_TYPE=Release"
+EXTRA_OECMAKE:append = " -DCMAKE_BUILD_TYPE=Release"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}/dbus-1/system.d
     install -m 0755 ${WORKDIR}/display_manager.conf ${D}${sysconfdir}/dbus-1/system.d/
 
@@ -34,7 +34,7 @@ do_install_append() {
     install -m 0744 ${WORKDIR}/${DM_CONFIG} ${D}${sysconfdir}/display_manager.cfg
 }
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${systemd_system_unitdir}/display-manager.service \
     ${sysconfdir}/display_manager.cfg \
     ${sysconfdir}/dbus-1/session.d/display_manager.conf \
