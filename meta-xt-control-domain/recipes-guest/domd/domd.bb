@@ -14,14 +14,14 @@ SRC_URI = "\
     file://domd.service \
 "
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${sysconfdir}/xen/domd.cfg \
     ${libdir}/xen/boot/domd.dtb \
     ${libdir}/xen/boot/linux-domd \
     ${systemd_unitdir}/system/domd.service \
 "
 
-SYSTEMD_SERVICE_${PN} = "domd.service"
+SYSTEMD_SERVICE:${PN} = "domd.service"
 
 do_install() {
     install -d ${D}${sysconfdir}/xen

@@ -18,9 +18,9 @@ S = "${WORKDIR}"
 
 inherit systemd
 
-SYSTEMD_SERVICE_${PN} = "bridge-up-notification.service"
+SYSTEMD_SERVICE:${PN} = "bridge-up-notification.service"
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${sysconfdir}/systemd/network/eth0.network \
     ${sysconfdir}/systemd/network/xenbr0.netdev \
     ${sysconfdir}/systemd/network/xenbr0.network \
@@ -30,7 +30,7 @@ FILES_${PN} = " \
     ${systemd_system_unitdir}/bridge-up-notification.service \
 "
 
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
     ethtool \
     iptables \
     kernel-module-xt-nat \
@@ -39,7 +39,7 @@ RDEPENDS_${PN} = " \
     xen-tools-xenstore \
 "
 
-RRECOMMENDS_${PN} += " \
+RRECOMMENDS:${PN} += " \
     virtual/xenstored \
 "
 

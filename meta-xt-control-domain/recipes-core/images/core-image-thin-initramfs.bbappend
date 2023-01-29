@@ -1,2 +1,2 @@
-IMAGE_INSTALL_append = " xen-tools"
-IMAGE_INSTALL_append = " ${XT_GUEST_INSTALL}"
+IMAGE_INSTALL:append = " xen-tools"
+IMAGE_INSTALL:append = " ${XT_GUEST_INSTALL}"

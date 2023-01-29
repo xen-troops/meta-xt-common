@@ -1,6 +1,6 @@
 DESCRIPTION = "Para-virtualized sound backend"
 SECTION = "extras"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 PR = "r0"
 
 inherit pkgconfig cmake systemd
@@ -12,13 +12,13 @@ PACKAGECONFIG[doc] = "-DWITH_DOC=ON,-DWITH_DOC=OFF,doxygen-native"
 
 DEPENDS = "libxenbe libconfig git-native"
 
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     libxenbe \
     libconfig \
     xen-tools-xenstore \
 "
 
-RRECOMMENDS_${PN} += " \
+RRECOMMENDS:${PN} += " \
     virtual/xenstored \
 "
 
@@ -32,13 +32,13 @@ S = "${WORKDIR}/git"
 
 SRCREV = "${AUTOREV}"
 
-SYSTEMD_SERVICE_${PN} = "sndbe.service"
+SYSTEMD_SERVICE:${PN} = "sndbe.service"
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${systemd_system_unitdir}/sndbe.service \
 "
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/sndbe.service ${D}${systemd_system_unitdir}
 }

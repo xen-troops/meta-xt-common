@@ -1,7 +1,7 @@
 require recipes-bsp/u-boot/u-boot-common.inc
 require recipes-bsp/u-boot/u-boot.inc
 
-UBOOT_CONFIG[doma] = "xenguest_arm64_android_defconfig"
+UBOOT_CONFIG[doma] = "xenguest:arm64_android_defconfig"
 UBOOT_CONFIG = "doma"
 
 SRCREV = "${AUTOREV}"
@@ -10,7 +10,7 @@ SRC_URI = "\
     ${UBOOT_SOURCE} \
 "
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${libdir}/xen/boot/u-boot-doma \
 "
 

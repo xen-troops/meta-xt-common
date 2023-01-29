@@ -1,13 +1,13 @@
 DESCRIPTION = "libxenbe"
 SECTION = "libs"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 PR = "r0"
 
 SRC_URI = "git://github.com/xen-troops/libxenbe.git;protocol=https;branch=master"
 SRCREV = "${AUTOREV}"
 
 DEPENDS = "xen-tools"
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
 	 xen-tools-libxenstore \
 	 xen-tools-libxenevtchn \
 	 xen-tools-libxengnttab \
@@ -22,6 +22,6 @@ S = "${WORKDIR}/git"
 # "QA Issue: -dev package contains non-symlink .so:"
 # TODO: the proper solution should be analyzed in future
 FILES_SOLIBSDEV = ""
-FILES_${PN} += "${libdir}/*.so"
+FILES:${PN} += "${libdir}/*.so"
 
 inherit pkgconfig cmake

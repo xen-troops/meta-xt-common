@@ -1,8 +1,8 @@
-FILESEXTRAPATHS_append := "${THISDIR}/files:"
+FILESEXTRAPATHS:append := "${THISDIR}/files:"
 
 PR="r2"
 
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://system.pa \
     file://daemon.conf \
     file://pulseaudio.service \
@@ -10,12 +10,12 @@ SRC_URI_append = " \
 
 inherit systemd
 
-FILES_${PN}-server += " \
+FILES:${PN}-server += " \
     ${systemd_system_unitdir} \
 "
 
 SYSTEMD_PACKAGES = "${PN}-server"
-SYSTEMD_SERVICE_${PN}-server = " pulseaudio.service"
+SYSTEMD_SERVICE:${PN}-server = " pulseaudio.service"
 
 set_cfg_value () {
 	sed -i -e "s~\(; *\)\?$2 =.*~$2 = $3~" "$1"
@@ -24,7 +24,7 @@ set_cfg_value () {
 	fi
 }
 
-do_install_append () {
+do_install:append () {
     install -d ${D}/etc/pulse
 
     install -m 0644 ${WORKDIR}/system.pa ${D}/etc/pulse/system.pa

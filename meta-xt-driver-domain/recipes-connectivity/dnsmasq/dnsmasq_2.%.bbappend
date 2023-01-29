@@ -1,14 +1,14 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += " \
     file://depend.conf \
 "
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${sysconfdir}/systemd/system/dnsmasq.service.d/depend.conf \
 "
 
-do_install_append() {
+do_install:append() {
     # Make dnsmasq listen only on bridge interface
     echo "interface=xenbr0" >> ${D}${sysconfdir}/dnsmasq.conf
 

@@ -11,17 +11,17 @@ S = "${WORKDIR}"
 
 inherit systemd
 
-SYSTEMD_SERVICE_${PN} = "block-up-notification.service"
+SYSTEMD_SERVICE:${PN} = "block-up-notification.service"
 
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     xen-tools-xenstore \
 "
 
-RRECOMMENDS_${PN} += " \
+RRECOMMENDS:${PN} += " \
     virtual/xenstored \
 "
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${systemd_system_unitdir}/block-up-notification.service \
 "
 
