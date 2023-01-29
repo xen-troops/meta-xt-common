@@ -10,7 +10,7 @@ inherit externalsrc systemd
 EXTERNALSRC_SYMLINKS = ""
 
 # We use custom U-BOOT to run the Android
-RDEPENDS_${PN} = "u-boot-android"
+RDEPENDS:${PN} = "u-boot-android"
 
 SRC_URI = "\
     file://doma.service \
@@ -21,13 +21,13 @@ python () {
         d.appendVar('SRC_URI', ' file://${XT_DOMA_CONFIG_NAME} ')
 }
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${sysconfdir}/xen/doma.cfg \
     ${libdir}/xen/boot/doma.dtb \
     ${systemd_unitdir}/system/doma.service \
 "
 
-SYSTEMD_SERVICE_${PN} = "doma.service"
+SYSTEMD_SERVICE:${PN} = "doma.service"
 
 do_install() {
     install -d ${D}${sysconfdir}/xen

@@ -11,12 +11,12 @@ SRC_URI = " \
 
 S = "${WORKDIR}"
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${sysconfdir}/systemd/network/eth0.network \
     ${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d/systemd-networkd-wait-online.conf \
 "
 
-RDEPENDS_${PN} = "systemd"
+RDEPENDS:${PN} = "systemd"
 
 do_install() {
     install -d ${D}${sysconfdir}/systemd/network/

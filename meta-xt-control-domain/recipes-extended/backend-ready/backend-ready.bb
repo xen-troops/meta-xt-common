@@ -3,7 +3,7 @@ SUMMARY = "systemd service that waits for backend to became ready"
 PV = "0.1"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
-RDEPENDS_${PM} = "xen-tools-xenstore"
+RDEPENDS:${PM} = "xen-tools-xenstore"
 
 inherit systemd
 
@@ -12,12 +12,12 @@ SRC_URI = "\
     file://backend-ready@.service \
 "
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${libdir}/xen/bin/wait-for-backend \
     ${systemd_unitdir}/system/backend-ready@.service \
 "
 
-SYSTEMD_SERVICE_${PN} = "backend-ready@.service"
+SYSTEMD_SERVICE:${PN} = "backend-ready@.service"
 
 do_install() {
     install -d ${D}${libdir}/xen/bin

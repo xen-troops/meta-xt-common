@@ -1,1 +1,1 @@
-IMAGE_INSTALL_append = " domu-network"
+IMAGE_INSTALL:append = " domu-network"

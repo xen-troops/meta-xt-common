@@ -14,13 +14,13 @@ SRC_URI = "\
     file://domz.service \
 "
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${sysconfdir}/xen/domz.cfg \
     ${systemd_unitdir}/system/domz.service \
     ${libdir}/xen/boot/zephyr-domz \
 "
 
-SYSTEMD_SERVICE_${PN} = "domz.service"
+SYSTEMD_SERVICE:${PN} = "domz.service"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"

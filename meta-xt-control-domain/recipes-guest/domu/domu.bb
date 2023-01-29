@@ -15,14 +15,14 @@ SRC_URI = "\
     file://domu.service \
 "
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${sysconfdir}/xen/domu.cfg \
     ${libdir}/xen/boot/domu.dtb \
     ${libdir}/xen/boot/linux-domu \
     ${systemd_unitdir}/system/domu.service \
 "
 
-SYSTEMD_SERVICE_${PN} = "domu.service"
+SYSTEMD_SERVICE:${PN} = "domu.service"
 
 do_install() {
     install -d ${D}${sysconfdir}/xen
