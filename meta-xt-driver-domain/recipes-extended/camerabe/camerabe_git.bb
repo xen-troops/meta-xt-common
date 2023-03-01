@@ -15,7 +15,7 @@ S = "${WORKDIR}/git"
 SYSTEMD_SERVICE_${PN} = "camerabe.service"
 
 SRC_URI = " \
-    git://github.com/xen-troops/camera_be.git;protocol=https;branch=master \
+    git://github.com/xen-troops/camera_be.git;protocol=https;branch=yocto-v4.7.0-xt0.1 \
     file://camerabe.service \
     file://camera_be.cfg \
 "
