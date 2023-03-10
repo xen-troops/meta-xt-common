@@ -12,7 +12,7 @@ PACKAGECONFIG[doc] = "-DWITH_DOC=ON,-DWITH_DOC=OFF,doxygen-native"
 
 DEPENDS = "libxenbe libconfig git-native"
 
-RDEPDENDS_${PN} += " \
+RDEPENDS_${PN} += " \
     libxenbe \
     libconfig \
     xen-tools-xenstore \
