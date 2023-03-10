@@ -22,7 +22,7 @@ SRC_URI = " \
 
 SRCREV = "${AUTOREV}"
 
-RDEPDENDS_${PN} += " \
+RDEPENDS_${PN} += " \
     xen-tools-xenstore \
 "
 
