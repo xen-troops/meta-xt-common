@@ -12,4 +12,3 @@ S = "${WORKDIR}/git"
 inherit autotools-brokensep pkgconfig
 
 BBCLASSEXTEND = "native"
-DEPENDS_virtclass-native = "dbus-native libsigc++-2.0-native"
