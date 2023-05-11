@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-BRANCH = "v5.10.41/rcar-5.1.4.1-xt0.1"
+BRANCH = "v5.10.41/rcar-5.1.4.1-xt0.2"
 SRCREV = "${AUTOREV}"
 LINUX_VERSION = "5.10.41"
 
