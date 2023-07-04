@@ -31,3 +31,6 @@ List of layers:
 * meta-xt-control-domain - recipes for control domain. This is the
   basically dom0 in Xen terms. This layer hold recipes that are
   responsible or creating other domain types during boot.
+
+* meta-xt-qemu - recipes for any domain, which wants to install and run
+  the recent version of QEMU.
