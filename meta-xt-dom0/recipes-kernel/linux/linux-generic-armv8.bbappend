@@ -1,10 +1,10 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-BRANCH = "v5.10.41/rcar-5.1.4.1-xt0.2"
-SRCREV = "${AUTOREV}"
-LINUX_VERSION = "5.10.41"
+BRANCH = "master"
+SRCREV = "6995e2de6891c724bfeb2db33d7b87775f913ad1"
+LINUX_VERSION = "6.4.0"
 
 SRC_URI = " \
-    git://github.com/xen-troops/linux.git;branch=${BRANCH};protocol=https \
+    git://github.com/torvalds/linux.git;branch=${BRANCH};protocol=https \
     file://defconfig \
   "
