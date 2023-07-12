@@ -10,7 +10,7 @@ inherit externalsrc systemd
 EXTERNALSRC_SYMLINKS = ""
 
 # We use custom U-BOOT to run the Android
-RDEPENDS:${PN} = "u-boot-android"
+RDEPENDS:${PN} = "${@bb.utils.contains('DISTRO_FEATURES', 'enable_virtio', ' u-boot-android-bazel', ' u-boot-android', d)}"
 
 SRC_URI = "\
     file://doma.service \
