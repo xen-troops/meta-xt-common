@@ -24,11 +24,19 @@ FILES:${PN} = " \
 
 SYSTEMD_SERVICE:${PN} = "domu.service"
 
+# Set path to dtb file to empty value in case it was not defined before.
+# In this case dtb will not be installed in 'do_install'.
+# This is usefull in case if precompiled dtb is not needed and only one
+# provided by xen will be used.
+XT_DOMU_DTB_NAME ??= ""
+
 do_install() {
     install -d ${D}${sysconfdir}/xen
     install -d ${D}${libdir}/xen/boot
     install -m 0644 ${WORKDIR}/${XT_DOMU_CONFIG_NAME} ${D}${sysconfdir}/xen/domu.cfg
-    install -m 0644 ${S}/${XT_DOMU_DTB_NAME} ${D}${libdir}/xen/boot/domu.dtb
+    if [ -n "${XT_DOMU_DTB_NAME}" ]; then
+        install -m 0644 ${S}/${XT_DOMU_DTB_NAME} ${D}${libdir}/xen/boot/domu.dtb
+    fi
     install -m 0644 ${S}/Image ${D}${libdir}/xen/boot/linux-domu
 
     install -d ${D}${systemd_unitdir}/system

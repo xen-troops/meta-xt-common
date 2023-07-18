@@ -29,11 +29,19 @@ FILES:${PN} = " \
 
 SYSTEMD_SERVICE:${PN} = "doma.service"
 
+# Set path to dtb file to empty value in case it was not defined before.
+# In this case dtb will not be installed in 'do_install'.
+# This is usefull in case if precompiled dtb is not needed and only one
+# provided by xen will be used.
+XT_DOMA_DTB_NAME ??= ""
+
 do_install() {
     install -d ${D}${sysconfdir}/xen
     install -d ${D}${libdir}/xen/boot
     install -m 0644 ${WORKDIR}/${XT_DOMA_CONFIG_NAME} ${D}${sysconfdir}/xen/doma.cfg
-    install -m 0644 ${S}/${XT_DOMA_DTB_NAME} ${D}${libdir}/xen/boot/doma.dtb
+    if [ -n "${XT_DOMA_DTB_NAME}" ]; then
+        install -m 0644 ${S}/${XT_DOMA_DTB_NAME} ${D}${libdir}/xen/boot/doma.dtb
+    fi
 
     install -d ${D}${systemd_unitdir}/system
     install -m 0644 ${WORKDIR}/doma.service ${D}${systemd_unitdir}/system/
