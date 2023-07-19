@@ -14,7 +14,7 @@ inherit pkgconfig ptest
 LIC_FILES_CHKSUM = "file://COPYING;md5=441c28d2cf86e15a37fa47e15a72fbac \
                     file://COPYING.LIB;endline=24;md5=8c5efda6cf1e1b03dcfd0e6c0d271c7f"
 
-SRC_URI = "git://github.com/svlad-90/qemu;branch=dev/vladyslav-goncharuk/virtio-integration;protocol=https;submodules=1 \
+SRC_URI = "git://github.com/xen-troops/qemu.git;branch=v7.0.0-xt;protocol=https;submodules=1 \
            file://powerpc_rom.bin \
            file://run-ptest \
            "
