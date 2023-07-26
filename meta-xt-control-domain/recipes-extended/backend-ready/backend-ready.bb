@@ -1,4 +1,4 @@
-SUMMARY = "systemd service that waits for backend to became ready"
+SUMMARY = "systemd service that waits for backend to become ready"
 
 PV = "0.1"
 LICENSE = "MIT"
