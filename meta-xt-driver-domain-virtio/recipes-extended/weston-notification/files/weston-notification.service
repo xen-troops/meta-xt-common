@@ -1,0 +1,14 @@
+[Unit]
+Description=Weston ready notification
+Wants=weston.service xenstored.service
+After=weston.service xenstored.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/xenstore-write drivers/weston-up/status ready
+RemainAfterExit=yes
+ExecStopPost=/usr/bin/xenstore-write drivers/weston-up/status dead
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
