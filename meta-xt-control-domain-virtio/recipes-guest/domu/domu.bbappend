@@ -4,6 +4,10 @@ SRC_URI += "\
     file://virtio-env.conf \
 "
 
+RDEPENDS:${PN} += " \
+    launch-domain \
+"
+
 FILES:${PN} += " \
     ${sysconfdir}/systemd/system/domu.service.d/virtio-env.conf \
 "
