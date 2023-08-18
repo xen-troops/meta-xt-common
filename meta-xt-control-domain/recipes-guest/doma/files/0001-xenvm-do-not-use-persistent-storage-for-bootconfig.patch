@@ -1,0 +1,32 @@
+From 7baf0b4a853e5977057aaa6dd2554c96596b4426 Mon Sep 17 00:00:00 2001
+From: Andrii Chepurnyi <andrii_chepurnyi@epam.com>
+Date: Fri, 18 Aug 2023 15:47:36 +0300
+Subject: [PATCH] xenvm: do not use persistent storage for bootconfig
+
+Do not use persistent storage for bootconfig, use
+the original way.
+
+Change-Id: I71e63b4739470f0f3d6e462c7ee20e0d54bfa92e
+Signed-off-by: Andrii Chepurnyi <andrii_chepurnyi@epam.com>
+---
+ cuttlefish.fragment | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/cuttlefish.fragment b/cuttlefish.fragment
+index ccdd5d10ca..0d1d11f6b0 100644
+--- a/cuttlefish.fragment
++++ b/cuttlefish.fragment
+@@ -8,8 +8,8 @@ CONFIG_ANDROID_BOOTLOADER=y
+ CONFIG_ANDROID_USES_RECOVERY_AS_BOOT=y
+ CONFIG_ANDROID_BOOTLOADER_OEMLOCK_CONSOLE=y
+ CONFIG_ANDROID_BOOTLOADER_KEYMINT_CONSOLE=y
+-CONFIG_ANDROID_PERSISTENT_RAW_DISK=y
+-CONFIG_ANDROID_PERSISTENT_RAW_DISK_DEVICE=1
++# CONFIG_ANDROID_PERSISTENT_RAW_DISK is not set
++# CONFIG_ANDROID_PERSISTENT_RAW_DISK_DEVICE is not set
+ CONFIG_CMDLINE=y
+ CONFIG_CMD_AB_SELECT=y
+ CONFIG_CMD_BOOT_ANDROID=y
+-- 
+2.25.1
+
