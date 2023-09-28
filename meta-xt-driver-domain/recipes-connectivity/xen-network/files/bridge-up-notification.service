@@ -1,7 +1,7 @@
 [Unit]
 Description=Bridge up notification
-Wants=systemd-networkd-wait-online.service xenstored.service
-After=systemd-networkd-wait-online.service xenstored.service
+Wants=xenstored.service
+After=xenstored.service network.target
 
 [Service]
 Type=simple
