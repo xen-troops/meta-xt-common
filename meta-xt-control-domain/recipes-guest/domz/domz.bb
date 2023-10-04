@@ -10,9 +10,13 @@ inherit systemd
 EXTERNALSRC_SYMLINKS = ""
 
 SRC_URI = "\
-    file://${XT_DOMZ_CONFIG_NAME} \
     file://domz.service \
 "
+
+python () {
+    if d.getVar('XT_DOMZ_CONFIG_NAME'):
+        d.appendVar('SRC_URI', ' file://${XT_DOMZ_CONFIG_NAME}')
+}
 
 FILES:${PN} = " \
     ${sysconfdir}/xen/domz.cfg \
