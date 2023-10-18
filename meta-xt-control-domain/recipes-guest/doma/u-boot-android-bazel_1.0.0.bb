@@ -7,7 +7,7 @@ inherit base
 
 UBOOT_REPO_GIT_URL ?= "github.com/xen-troops/android_u-boot_manifest"
 UBOOT_REPO_DOWNLOAD_PROTOCOL ?= "https"
-UBOOT_REPO_GIT_BRANCH ?= "u-boot-mainline-xt-30_08_23"
+UBOOT_REPO_GIT_BRANCH ?= "u-boot-mainline-xt"
 UBOOT_REPO_MANIFEST ?= "default.xml"
 U_BOOT_BUILD_TARGET ?= "xen_aarch64"
 
