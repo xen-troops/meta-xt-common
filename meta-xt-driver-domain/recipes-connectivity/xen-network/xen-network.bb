@@ -56,7 +56,7 @@ do_install() {
     install -m 0644 ${S}/xenbr0-systemd-networkd.conf ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d
     install -m 0644 ${S}/port-forward-systemd-networkd.conf ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domf', 'true', 'false', d)}; then
-        echo "\n# SSH to domF" \
+        echo "# SSH to domF" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
         echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2022 -j DNAT --to-destination 192.168.0.3:22" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
@@ -64,13 +64,13 @@ do_install() {
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
     fi
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'doma', 'true', 'false', d)}; then
-        echo "\n# ADB to domA" \
+        echo "# ADB to domA" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
         echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 5555 -j DNAT --to-destination 192.168.0.4:5555" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
     fi
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domu', 'true', 'false', d)}; then
-        echo "\n# SSH to domU" \
+        echo "# SSH to domU" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
         echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2025 -j DNAT --to-destination 192.168.0.5:22" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
