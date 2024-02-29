@@ -1,11 +1,5 @@
+require recipes-core/images/common_install.inc
+
 IMAGE_INSTALL:append = " \
-    xen \
-    xen-tools-devd \
-    xen-tools-scripts-network \
-    xen-tools-scripts-block \
-    xen-tools-xenstore \
-    xen-network \
-    dnsmasq \
-    block \
     ${@bb.utils.contains('DISTRO_FEATURES', 'ivi-shell', 'displaymanager', '', d)} \
 "
