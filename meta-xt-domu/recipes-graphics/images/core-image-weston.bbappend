@@ -1,1 +1,1 @@
-IMAGE_INSTALL:append = " domu-network"
+require recipes-core/images/common_install.inc
