@@ -3,6 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "\
     file://virtio-env.conf \
     file://virtio-env-weston.conf \
+    file://virtio-env-no-weston.conf \
 "
 
 RDEPENDS:${PN} += " \
@@ -11,7 +12,9 @@ RDEPENDS:${PN} += " \
 
 FILES:${PN} += " \
     ${sysconfdir}/systemd/system/domu.service.d/virtio-env.conf \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'gsx', '${sysconfdir}/systemd/system/domu.service.d/virtio-env-weston.conf', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'gsx', \
+        '${sysconfdir}/systemd/system/domu.service.d/virtio-env-weston.conf', \
+        '${sysconfdir}/systemd/system/domu.service.d/virtio-env-no-weston.conf', d)} \
 "
 
 do_install:append() {
@@ -23,5 +26,7 @@ do_install:append() {
     # we can look on presence of GSX on the board.
     if ${@bb.utils.contains('MACHINE_FEATURES', 'gsx', 'true', 'false', d)}; then
         install -m 0644 ${WORKDIR}/virtio-env-weston.conf ${D}${sysconfdir}/systemd/system/domu.service.d
+    else
+        install -m 0644 ${WORKDIR}/virtio-env-no-weston.conf ${D}${sysconfdir}/systemd/system/domu.service.d
     fi
 }
