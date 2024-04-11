@@ -1,7 +1,7 @@
 DESCRIPTION = "C++ bindings for dbus"
 HOMEPAGE = "https://dbus-cxx.github.io/"
 SECTION = "libs"
-LICENSE = "GPLv3"
+LICENSE = "GPL-3.0-only"
 DEPENDS = "boost dbus libsigc++-2.0"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
