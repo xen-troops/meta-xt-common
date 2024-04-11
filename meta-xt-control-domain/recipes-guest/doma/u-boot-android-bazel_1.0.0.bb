@@ -22,7 +22,7 @@ SRC_URI = "\
            "
 SRCREV = "30adce0c709887d9788f33b494ae79090b8bcc17"
 
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/repo/u-boot/Licenses/README;md5=2ca5f2c35c8cc335f0a19756634782f1"
 
 FILES:${PN} = "\
