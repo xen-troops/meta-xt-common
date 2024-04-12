@@ -6,7 +6,7 @@ DEPENDS = "boost dbus libsigc++-2.0"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 
-SRC_URI = "git://github.com/dbus-cxx/${PN}.git;nobranch=1;protocol=https"
+SRC_URI = "git://github.com/dbus-cxx/dbus-cxx.git;nobranch=1;protocol=https"
 S = "${WORKDIR}/git"
 # commit corresponds to tag '0.10.0'
 SRCREV = "1d9425027860d5b9006178aefc2e638c48848477"
