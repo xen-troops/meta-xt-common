@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=1f1a56bb2dadf5f2be8eb342acf4ed79"
 DEPENDS = "weston virtual/libgles2 pixman wayland-native"
 
 SRC_URI = " \
-    git://github.com/COVESA/${BPN}.git;protocol=https;branch=master \
+    git://github.com/COVESA/wayland-ivi-extension.git;protocol=https;branch=master \
     file://0001-ivi-input-controller-update-to-weston-7-header-files.patch  \
     file://0002-ivi-id-agent-update-to-weston-7-header-files.patch \
     file://0003-ivi-id-agent-update-dependencies-to-build-on-weston-.patch \
