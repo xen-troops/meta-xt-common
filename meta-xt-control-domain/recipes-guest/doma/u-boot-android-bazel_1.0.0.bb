@@ -20,6 +20,7 @@ DEPENDS += "rsync-native"
 SRC_URI = "\
            repo://${UBOOT_REPO_GIT_URL};protocol=${UBOOT_REPO_DOWNLOAD_PROTOCOL};branch=${UBOOT_REPO_GIT_BRANCH};manifest=${UBOOT_REPO_MANIFEST}  \
            "
+SRCREV = "30adce0c709887d9788f33b494ae79090b8bcc17"
 
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/repo/u-boot/Licenses/README;md5=2ca5f2c35c8cc335f0a19756634782f1"
