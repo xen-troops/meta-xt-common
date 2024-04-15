@@ -9,7 +9,7 @@ S = "${WORKDIR}/git"
 
 DEPENDS = "xen-tools"
 
-SRCREV = "${AUTOREV}"
+SRCREV = "274f5e933a7381a9eb2a7b5856f37c3d982f3874"
 
 SRC_URI:append = " \
     git://github.com/xen-troops/virtio-disk.git;protocol=https;branch=virtio_next \

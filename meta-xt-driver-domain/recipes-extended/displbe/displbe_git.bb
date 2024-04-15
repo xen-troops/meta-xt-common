@@ -16,7 +16,7 @@ SRC_URI = " \
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=a23a74b3f4caf9616230789d94217acb"
 
-SRCREV = "${AUTOREV}"
+SRCREV = "b218acf44e71c4a77082944e3878e1859a352fba"
 
 DEPENDS = "libxenbe libconfig git-native"
 
