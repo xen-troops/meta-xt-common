@@ -4,7 +4,7 @@ require recipes-bsp/u-boot/u-boot.inc
 UBOOT_CONFIG[doma] = "xenguest_arm64_android_defconfig"
 UBOOT_CONFIG = "doma"
 
-SRCREV = "${AUTOREV}"
+SRCREV = "6009039b25411bb567b5394de56f79256e71cfc8"
 UBOOT_SOURCE ??= "git://github.com/xen-troops/u-boot.git;protocol=https;branch=android-master;"
 SRC_URI = "\
     ${UBOOT_SOURCE} \

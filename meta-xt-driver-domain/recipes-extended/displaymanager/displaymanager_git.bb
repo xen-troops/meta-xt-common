@@ -17,7 +17,7 @@ SRC_URI = " \
     file://display-manager.service \
 "
 S = "${WORKDIR}/git"
-SRCREV = "${AUTOREV}"
+SRCREV = "$868e703b7652c9a40ae878d7d517f97398b4549c"
 
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[doc] = "-DWITH_DOC=ON,-DWITH_DOC=OFF,doxygen-native"

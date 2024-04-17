@@ -20,7 +20,7 @@ SRC_URI = " \
     file://camera_be.cfg \
 "
 
-SRCREV = "${AUTOREV}"
+SRCREV = "b12d4934b7d3fed75d1255793893070768636555"
 
 RDEPENDS_${PN} += " \
     xen-tools-xenstore \
