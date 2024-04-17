@@ -4,7 +4,7 @@ LICENSE = "GPLv2"
 PR = "r0"
 
 SRC_URI = "git://github.com/xen-troops/libxenbe.git;protocol=https;branch=master"
-SRCREV = "${AUTOREV}"
+SRCREV = "21f1fdc090ee5342df7608358c5130a7675dad68"
 
 DEPENDS = "xen-tools"
 RDEPENDS_${PN} = " \
