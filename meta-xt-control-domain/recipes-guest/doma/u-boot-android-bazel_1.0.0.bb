@@ -27,6 +27,8 @@ LIC_FILES_CHKSUM = "file://${WORKDIR}/repo/u-boot/Licenses/README;md5=2ca5f2c35c
 FILES:${PN} = "\
                ${libdir}/xen/boot/u-boot-doma \
                "
+# Enable network in do_compile, since bazel spawns client and server with socket communication
+do_compile[network] = "1"
 
 do_compile() {
     cd ${WORKDIR}/repo;
