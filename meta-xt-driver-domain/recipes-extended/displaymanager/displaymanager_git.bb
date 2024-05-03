@@ -7,7 +7,8 @@ inherit pkgconfig cmake systemd
 
 SYSTEMD_SERVICE:${PN} = "display-manager.service"
 
-DEPENDS = "libconfig wayland-ivi-extension glib-2.0 glib-2.0-native git-native xt-log"
+DEPENDS = "libconfig glib-2.0 glib-2.0-native git-native xt-log"
+DEPENDS:append = "${@bb.utils.contains('XT_GUEST_INSTALL', 'doma', ' wayland-ivi-extension', '', d)}"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
