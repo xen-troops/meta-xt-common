@@ -39,10 +39,6 @@ RDEPENDS:${PN} = " \
     xen-tools-xenstore \
 "
 
-RRECOMMENDS:${PN} += " \
-    virtual/xenstored \
-"
-
 do_install() {
     # Install bridge/network artifacts
     install -d ${D}${systemd_system_unitdir}
