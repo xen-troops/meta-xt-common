@@ -18,10 +18,6 @@ RDEPENDS:${PN} += " \
     xen-tools-xenstore \
 "
 
-RRECOMMENDS:${PN} += " \
-    virtual/xenstored \
-"
-
 SRC_URI = " \
     git://github.com/xen-troops/snd_be.git;protocol=https;branch=master \
     file://sndbe.service \

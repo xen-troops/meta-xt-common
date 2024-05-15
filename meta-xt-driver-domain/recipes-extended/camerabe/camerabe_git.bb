@@ -26,10 +26,6 @@ RDEPENDS:${PN} += " \
     xen-tools-xenstore \
 "
 
-RRECOMMENDS:${PN} += " \
-    virtual/xenstored \
-"
-
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[doc] = "-DWITH_DOC=ON,-DWITH_DOC=OFF,doxygen-native"
 
