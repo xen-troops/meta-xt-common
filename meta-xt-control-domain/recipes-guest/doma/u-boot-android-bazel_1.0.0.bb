@@ -1,8 +1,6 @@
 SUMMARY = "Deployment of Android U-Boot, which is built by the Bazel build system."
 DESCRIPTION = "Android U-Boot is a standard tool to boot Android."
 
-inherit base
-
 # PARAMETERS
 
 UBOOT_REPO_GIT_URL ?= "github.com/xen-troops/android_u-boot_manifest"
