@@ -1,0 +1,58 @@
+From ac89efd1764adb732eb3628b59925e4d909ebbe4 Mon Sep 17 00:00:00 2001
+From: Ruslan Shymkevych <ruslan_shymkevych@epam.com>
+Date: Wed, 22 May 2024 18:23:21 +0300
+Subject: [PATCH] hack: use weston 13
+
+Thi commit is just temporary hack to compile
+wayland-ivi-extension with weston 13, which is
+the default for yocto scarthgap.
+
+The commit should be dropped when support for the
+weston 13 will be provided by developers.
+
+Signed-off-by: Ruslan Shymkevych <ruslan_shymkevych@epam.com>
+---
+ CMakeLists.txt                        | 2 +-
+ weston-ivi-shell/src/ivi-controller.c | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d6428c2..5917875 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -28,7 +28,7 @@ include(GNUInstallDirs)
+ SET(IVI_EXTENSION_VERSION 2.3.2)
+ SET(ILM_API_VERSION 2.3.2)
+ 
+-SET(LIBWESTON_VER 12)
++SET(LIBWESTON_VER 13)
+ 
+ SET( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -Wextra -Wno-unused-parameter" )
+ SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-parameter" )
+diff --git a/weston-ivi-shell/src/ivi-controller.c b/weston-ivi-shell/src/ivi-controller.c
+index 4701aec..891a589 100644
+--- a/weston-ivi-shell/src/ivi-controller.c
++++ b/weston-ivi-shell/src/ivi-controller.c
+@@ -881,15 +881,15 @@ set_bkgnd_surface_prop(struct ivishell *shell)
+     wl_list_for_each(output, &compositor->output_list, link) {
+         if (!count)
+         {
+-            x = output->x;
+-            y = output->y;
++            x = output->pos.c.x;
++            y = output->pos.c.y;
+             count++;
+         }
+-        dest_width = output->x + output->width;
++        dest_width = output->pos.c.x + output->width;
+         if (output->height > dest_height)
+             dest_height = output->height;
+         weston_log("set_bkgnd_surface_prop: o_name:%s x:%d y:%d o_width:%d o_height:%d\n",
+-                   output->name, output->x, output->y, output->width, output->height);
++                   output->name, output->pos.c.x, output->pos.c.y, output->width, output->height);
+     }
+ 
+     w_surface = view->surface;
+-- 
+2.25.1
+
