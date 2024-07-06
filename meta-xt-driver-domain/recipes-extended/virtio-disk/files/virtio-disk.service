@@ -1,8 +1,7 @@
 [Unit]
 Description=virtio-disk backend
-Requires=proc-xen.mount
 Wants=xenstored.service
-After=proc-xen.mount xenstored.service
+After=xenstored.service
 
 [Service]
 Type=simple
