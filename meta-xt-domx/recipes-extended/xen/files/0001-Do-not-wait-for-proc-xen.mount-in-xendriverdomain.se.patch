@@ -1,0 +1,32 @@
+From e6253839db7db3820c34ae21415e7e208728b171 Mon Sep 17 00:00:00 2001
+From: Ruslan Shymkevych <ruslan_shymkevych@epam.com>
+Date: Wed, 10 Jul 2024 15:56:55 +0300
+Subject: [PATCH] Do not wait for proc-xen.mount in xendriverdomain.service
+
+During upgrade to the scarthgap, we see that
+`/proc/xen` is not mounted anymore, so we can't
+wait for `proc-xen.mound` target.
+
+Also, `/proc/xen` is no longer required because
+`/dev/xen` interface is used instead of it.
+
+Signed-off-by: Ruslan Shymkevych <ruslan_shymkevych@epam.com>
+---
+ tools/hotplug/Linux/systemd/xendriverdomain.service.in | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/tools/hotplug/Linux/systemd/xendriverdomain.service.in b/tools/hotplug/Linux/systemd/xendriverdomain.service.in
+index c39ec04182..17852564f5 100644
+--- a/tools/hotplug/Linux/systemd/xendriverdomain.service.in
++++ b/tools/hotplug/Linux/systemd/xendriverdomain.service.in
+@@ -1,7 +1,5 @@
+ [Unit]
+ Description=Xen driver domain device daemon
+-Requires=proc-xen.mount
+-After=proc-xen.mount
+ ConditionVirtualization=xen
+ 
+ [Service]
+-- 
+2.25.1
+
