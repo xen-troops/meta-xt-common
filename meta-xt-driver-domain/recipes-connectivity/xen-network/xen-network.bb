@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 
 SRC_URI = " \
     file://bridge-up-notification.service \
-    file://eth0.network \
+    file://end0.network \
     file://xenbr0.netdev \
     file://50-xenbr0.network \
     file://xenbr0-systemd-networkd.conf \
@@ -21,7 +21,7 @@ inherit systemd
 SYSTEMD_SERVICE:${PN} = "bridge-up-notification.service"
 
 FILES:${PN} = " \
-    ${sysconfdir}/systemd/network/eth0.network \
+    ${sysconfdir}/systemd/network/end0.network \
     ${sysconfdir}/systemd/network/xenbr0.netdev \
     ${sysconfdir}/systemd/network/50-xenbr0.network \
     ${sysconfdir}/systemd/system/systemd-networkd.service.d/xenbr0-systemd-networkd.conf \
@@ -54,21 +54,21 @@ do_install() {
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domf', 'true', 'false', d)}; then
         echo "# SSH to domF" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
-        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2022 -j DNAT --to-destination 192.168.0.3:22" \
+        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i end0 -p tcp --dport 2022 -j DNAT --to-destination 192.168.0.3:22" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
-        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 8089 -j DNAT --to-destination 192.168.0.3:8089" \
+        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i end0 -p tcp --dport 8089 -j DNAT --to-destination 192.168.0.3:8089" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
     fi
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'doma', 'true', 'false', d)}; then
         echo "# ADB to domA" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
-        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 5555 -j DNAT --to-destination 192.168.0.4:5555" \
+        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i end0 -p tcp --dport 5555 -j DNAT --to-destination 192.168.0.4:5555" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
     fi
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domu', 'true', 'false', d)}; then
         echo "# SSH to domU" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
-        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2025 -j DNAT --to-destination 192.168.0.5:22" \
+        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i end0 -p tcp --dport 2025 -j DNAT --to-destination 192.168.0.5:22" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
     fi
 
