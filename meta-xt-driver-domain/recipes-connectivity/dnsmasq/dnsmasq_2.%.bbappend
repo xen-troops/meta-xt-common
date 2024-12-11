@@ -8,6 +8,8 @@ FILES:${PN} += " \
     ${sysconfdir}/systemd/system/dnsmasq.service.d/depend.conf \
 "
 
+XT_DOMA_ETH0_MAC ??= "08:00:27:ff:cb:ce"
+
 do_install:append() {
     # Make dnsmasq listen only on bridge interface
     echo "interface=xenbr0" >> ${D}${sysconfdir}/dnsmasq.conf
@@ -19,7 +21,7 @@ do_install:append() {
     # Configure IP addresses for DomA, DomU.
     # MAC addresses are defined in /etc/xen/domX.cfg
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'doma', 'true', 'false', d)}; then
-        echo "dhcp-host=08:00:27:ff:cb:ce,doma,192.168.0.4,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
+        echo "dhcp-host=${XT_DOMA_ETH0_MAC},doma,192.168.0.4,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
     fi
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domu', 'true', 'false', d)}; then
         echo "dhcp-host=08:00:27:ff:cb:cf,domu,192.168.0.5,infinite" >> ${D}${sysconfdir}/dnsmasq.conf
