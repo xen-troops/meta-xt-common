@@ -39,6 +39,8 @@ RDEPENDS:${PN} = " \
     xen-tools-xenstore \
 "
 
+XT_DOMA_FORWARD_DESTINATION ??= "192.168.0.4"
+
 do_install() {
     # Install bridge/network artifacts
     install -d ${D}${systemd_system_unitdir}
@@ -62,7 +64,7 @@ do_install() {
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'doma', 'true', 'false', d)}; then
         echo "# ADB to domA" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
-        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 5555 -j DNAT --to-destination 192.168.0.4:5555" \
+        echo "ExecStartPost=+/usr/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 5555 -j DNAT --to-destination ${XT_DOMA_FORWARD_DESTINATION}:5555" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
     fi
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domu', 'true', 'false', d)}; then
