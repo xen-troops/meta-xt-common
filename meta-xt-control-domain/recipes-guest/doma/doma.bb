@@ -10,7 +10,7 @@ inherit externalsrc systemd
 EXTERNALSRC_SYMLINKS = ""
 
 # We use custom U-BOOT to run the Android
-RDEPENDS:${PN} = "u-boot-android-bazel"
+RDEPENDS:${PN} += "${VIRTUAL-RUNTIME_android_u_boot}"
 
 SRC_URI = "\
     file://doma.service \
