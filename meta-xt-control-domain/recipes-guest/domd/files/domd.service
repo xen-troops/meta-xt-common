@@ -1,7 +1,7 @@
 [Unit]
 Description=DomD
-Requires=proc-xen.mount
-After=proc-xen.mount
+Requires=proc-xen.mount xenstored.service xenconsoled.service
+After=proc-xen.mount xenstored.service xenconsoled.service
 
 [Service]
 Type=oneshot
