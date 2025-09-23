@@ -18,7 +18,7 @@ SRC_URI = "gitsm://github.com/xen-troops/qemu.git;branch=v7.0.0-xt;protocol=http
            file://powerpc_rom.bin \
            file://run-ptest \
            "
-SRCREV = "5456c82c966570c1a64524cd3fb7116d80199500"
+SRCREV = "1f6e019715b151224ee11396b1b44e957348653e"
 S = "${WORKDIR}/git"
 
 # UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
