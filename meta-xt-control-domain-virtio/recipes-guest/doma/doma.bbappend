@@ -14,5 +14,5 @@ FILES:${PN} += " \
 
 do_install:append() {
     install -d ${D}${sysconfdir}/systemd/system/doma.service.d
-    install -m 0644 ${WORKDIR}/virtio-env.conf ${D}${sysconfdir}/systemd/system/doma.service.d
+    install -m 0644 ${UNPACKDIR}/virtio-env.conf ${D}${sysconfdir}/systemd/system/doma.service.d
 }

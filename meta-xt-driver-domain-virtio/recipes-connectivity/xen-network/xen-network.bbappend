@@ -9,5 +9,5 @@ FILES:${PN} += " \
 "
 
 do_install:append() {
-    install -m 0644 ${WORKDIR}/60-vif-emu.network ${D}${sysconfdir}/systemd/network
+    install -m 0644 ${UNPACKDIR}/60-vif-emu.network ${D}${sysconfdir}/systemd/network
 }

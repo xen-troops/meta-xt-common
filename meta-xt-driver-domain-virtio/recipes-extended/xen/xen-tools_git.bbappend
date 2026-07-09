@@ -7,7 +7,7 @@ FILES:${PN}-devd += " \
 do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'true', 'false', d)}; then
         install -d ${D}${sysconfdir}/systemd/system/xendriverdomain.service.d
-        install -m 0644 ${WORKDIR}/weston-env.conf ${D}${sysconfdir}/systemd/system/xendriverdomain.service.d
+        install -m 0644 ${UNPACKDIR}/weston-env.conf ${D}${sysconfdir}/systemd/system/xendriverdomain.service.d
     fi
 }
 

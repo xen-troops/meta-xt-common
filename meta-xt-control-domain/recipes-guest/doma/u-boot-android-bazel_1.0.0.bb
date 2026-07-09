@@ -9,7 +9,7 @@ UBOOT_REPO_GIT_BRANCH ?= "u-boot-mainline-xt"
 UBOOT_REPO_MANIFEST ?= "default.xml"
 U_BOOT_BUILD_TARGET ?= "${@bb.utils.contains('DISTRO_FEATURES', 'enable_virtio', 'xen_aarch64', 'xen_pvblock_aarch64', d)}"
 
-SRC_URI:append = "file://0001-xenvm-do-not-use-persistent-storage-for-bootconfig.patch;patchdir=${WORKDIR}/repo/u-boot"
+SRC_URI:append = "file://0001-xenvm-do-not-use-persistent-storage-for-bootconfig.patch;patchdir=${UNPACKDIR}/repo/u-boot"
 
 DEPENDS += "rsync-native"
 
@@ -21,7 +21,7 @@ SRC_URI = "\
 SRCREV = "30adce0c709887d9788f33b494ae79090b8bcc17"
 
 LICENSE = "GPL-2.0-or-later"
-LIC_FILES_CHKSUM = "file://${WORKDIR}/repo/u-boot/Licenses/README;md5=2ca5f2c35c8cc335f0a19756634782f1"
+LIC_FILES_CHKSUM = "file://${UNPACKDIR}/repo/u-boot/Licenses/README;md5=2ca5f2c35c8cc335f0a19756634782f1"
 
 FILES:${PN} = "\
                ${libdir}/xen/boot/u-boot-doma \
@@ -30,7 +30,7 @@ FILES:${PN} = "\
 do_compile[network] = "1"
 
 do_compile() {
-    cd ${WORKDIR}/repo;
+    cd ${UNPACKDIR}/repo;
     export CC=""
     export CXX=""
     export LD=""

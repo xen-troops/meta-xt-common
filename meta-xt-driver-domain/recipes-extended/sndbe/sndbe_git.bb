@@ -34,6 +34,6 @@ FILES:${PN} += " \
 
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/sndbe.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/sndbe.service ${D}${systemd_system_unitdir}
 }
 

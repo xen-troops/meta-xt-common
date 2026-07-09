@@ -37,12 +37,12 @@ XT_DOMU_DTB_NAME ??= ""
 do_install() {
     install -d ${D}${sysconfdir}/xen
     install -d ${D}${libdir}/xen/boot
-    install -m 0644 ${WORKDIR}/${XT_DOMU_CONFIG_NAME} ${D}${sysconfdir}/xen/domu.cfg
+    install -m 0644 ${UNPACKDIR}/${XT_DOMU_CONFIG_NAME} ${D}${sysconfdir}/xen/domu.cfg
     if [ -n "${XT_DOMU_DTB_NAME}" ]; then
         install -m 0644 ${S}/${XT_DOMU_DTB_NAME} ${D}${libdir}/xen/boot/domu.dtb
     fi
     install -m 0644 ${S}/Image ${D}${libdir}/xen/boot/linux-domu
 
     install -d ${D}${systemd_unitdir}/system
-    install -m 0644 ${WORKDIR}/domu.service ${D}${systemd_unitdir}/system/
+    install -m 0644 ${UNPACKDIR}/domu.service ${D}${systemd_unitdir}/system/
 }

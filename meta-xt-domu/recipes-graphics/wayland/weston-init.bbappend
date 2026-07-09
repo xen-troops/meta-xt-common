@@ -17,6 +17,6 @@ do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'enable_virtio', 'true', 'false', d)}; then
         # For virtio set XDG_RUNTIME_DIR to /run/user/$UID (e.g. run/user/0)
         install -d ${D}/${sysconfdir}/profile.d
-        install -m 0755 ${WORKDIR}/weston.sh ${D}/${sysconfdir}/profile.d/weston.sh
+        install -m 0755 ${UNPACKDIR}/weston.sh ${D}/${sysconfdir}/profile.d/weston.sh
     fi
 }

@@ -29,10 +29,10 @@ PACKAGECONFIG[doc] = "-DWITH_DOC=ON,-DWITH_DOC=OFF,doxygen-native"
 
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/camerabe.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/camerabe.service ${D}${systemd_system_unitdir}
 
     install -d ${D}${sysconfdir}
-    install -m 0644 ${WORKDIR}/camera_be.cfg ${D}${sysconfdir}/camera_be.cfg
+    install -m 0644 ${UNPACKDIR}/camera_be.cfg ${D}${sysconfdir}/camera_be.cfg
 }
 
 FILES:${PN} += " \

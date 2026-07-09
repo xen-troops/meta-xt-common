@@ -16,5 +16,5 @@ FILES:${PN} = " \
 
 do_install() {
     install -d ${D}${libdir}/xen/bin
-    install -m 0755 ${WORKDIR}/launch-domain ${D}${libdir}/xen/bin/launch-domain
+    install -m 0755 ${UNPACKDIR}/launch-domain ${D}${libdir}/xen/bin/launch-domain
 }

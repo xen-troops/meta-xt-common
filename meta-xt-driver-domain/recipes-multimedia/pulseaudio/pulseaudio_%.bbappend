@@ -27,15 +27,15 @@ set_cfg_value () {
 do_install:append () {
     install -d ${D}/etc/pulse
 
-    install -m 0644 ${WORKDIR}/system.pa ${D}/etc/pulse/system.pa
-    install -m 0644 ${WORKDIR}/daemon.conf ${D}/etc/pulse/daemon.conf
+    install -m 0644 ${UNPACKDIR}/system.pa ${D}/etc/pulse/system.pa
+    install -m 0644 ${UNPACKDIR}/daemon.conf ${D}/etc/pulse/daemon.conf
 
     rm -rf ${D}/usr/lib/systemd
     rm ${D}/${sysconfdir}/pulse/default.pa
 
     install -d ${D}${systemd_system_unitdir}
     install -d ${D}${systemd_system_unitdir}/sound.target.wants
-    install -m 0644 ${WORKDIR}/pulseaudio.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/pulseaudio.service ${D}${systemd_system_unitdir}
     ln -sf ${systemd_system_unitdir}/pulseaudio.service \
         ${D}${systemd_system_unitdir}/sound.target.wants/pulseaudio.service
 

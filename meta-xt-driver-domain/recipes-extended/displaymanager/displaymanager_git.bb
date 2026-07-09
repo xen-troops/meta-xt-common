@@ -26,12 +26,12 @@ EXTRA_OECMAKE:append = " -DCMAKE_BUILD_TYPE=Release"
 
 do_install:append() {
     install -d ${D}${sysconfdir}/dbus-1/system.d
-    install -m 0755 ${WORKDIR}/display_manager.conf ${D}${sysconfdir}/dbus-1/system.d/
+    install -m 0755 ${UNPACKDIR}/display_manager.conf ${D}${sysconfdir}/dbus-1/system.d/
 
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/display-manager.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/display-manager.service ${D}${systemd_system_unitdir}
 
-    install -m 0744 ${WORKDIR}/${DM_CONFIG} ${D}${sysconfdir}/display_manager.cfg
+    install -m 0744 ${UNPACKDIR}/${DM_CONFIG} ${D}${sysconfdir}/display_manager.cfg
 }
 
 FILES:${PN} += " \

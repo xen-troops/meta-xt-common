@@ -38,11 +38,11 @@ XT_DOMA_DTB_NAME ??= ""
 do_install() {
     install -d ${D}${sysconfdir}/xen
     install -d ${D}${libdir}/xen/boot
-    install -m 0644 ${WORKDIR}/${XT_DOMA_CONFIG_NAME} ${D}${sysconfdir}/xen/doma.cfg
+    install -m 0644 ${UNPACKDIR}/${XT_DOMA_CONFIG_NAME} ${D}${sysconfdir}/xen/doma.cfg
     if [ -n "${XT_DOMA_DTB_NAME}" ]; then
         install -m 0644 ${S}/${XT_DOMA_DTB_NAME} ${D}${libdir}/xen/boot/doma.dtb
     fi
 
     install -d ${D}${systemd_unitdir}/system
-    install -m 0644 ${WORKDIR}/doma.service ${D}${systemd_unitdir}/system/
+    install -m 0644 ${UNPACKDIR}/doma.service ${D}${systemd_unitdir}/system/
 }

@@ -35,5 +35,5 @@ do_install:append() {
 
     # Add actual dependencies
     install -d ${D}${sysconfdir}/systemd/system/dnsmasq.service.d
-    install -m 0644 ${WORKDIR}/depend.conf ${D}${sysconfdir}/systemd/system/dnsmasq.service.d/
+    install -m 0644 ${UNPACKDIR}/depend.conf ${D}${sysconfdir}/systemd/system/dnsmasq.service.d/
 }
