@@ -8,6 +8,7 @@ To avoid a harmless info message to be printed by of_map_id()
 if there are any:
 OF: /pcie@10000000: no iommu-map translation for id 0x18 on (null)
 
+Upstream-Status: Inappropriate [xen-troops specific patch]
 Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 ---
  drivers/xen/grant-dma-ops.c | 7 +++++++

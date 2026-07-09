@@ -10,6 +10,7 @@ the default for yocto scarthgap.
 The commit should be dropped when support for the
 weston 13 will be provided by developers.
 
+Upstream-Status: Inappropriate [xen-troops specific patch]
 Signed-off-by: Ruslan Shymkevych <ruslan_shymkevych@epam.com>
 ---
  CMakeLists.txt                        | 2 +-

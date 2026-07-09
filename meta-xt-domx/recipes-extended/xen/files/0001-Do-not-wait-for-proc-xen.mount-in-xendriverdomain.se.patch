@@ -10,6 +10,7 @@ wait for `proc-xen.mound` target.
 Also, `/proc/xen` is no longer required because
 `/dev/xen` interface is used instead of it.
 
+Upstream-Status: Inappropriate [xen-troops specific patch]
 Signed-off-by: Ruslan Shymkevych <ruslan_shymkevych@epam.com>
 ---
  tools/hotplug/Linux/systemd/xendriverdomain.service.in | 2 --
