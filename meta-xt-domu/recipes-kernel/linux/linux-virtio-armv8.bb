@@ -20,7 +20,6 @@ SRCREV = "6613476e225e090cc9aad49be7fa504e290dd33d"
 SRC_URI = "${BSP_URL};nocheckout=1;branch=${BRANCH};protocol=https"
 SRC_URI:append = " file://defconfig"
 SRC_URI:append = " file://0001-WIP-Use-INVALID_BACKEND_DOMID-for-the-untraslated-de.patch"
-SRC_URI:append = " file://0002-DEBUG-Print-retrieved-stream-ID-backend_domid-for-bo.patch"
 
 LINUX_VERSION = "6.8.0-rc1"
 PV = "${LINUX_VERSION}+git${SRCPV}"
