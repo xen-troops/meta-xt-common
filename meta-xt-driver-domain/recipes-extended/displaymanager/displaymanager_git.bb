@@ -16,7 +16,7 @@ SRC_URI = " \
     file://display_manager.conf \
     file://display-manager.service \
 "
-S = "${WORKDIR}/git"
+
 SRCREV = "868e703b7652c9a40ae878d7d517f97398b4549c"
 
 PACKAGECONFIG ??= ""

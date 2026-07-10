@@ -3,8 +3,6 @@ SECTION = "extras"
 LICENSE = "GPL-2.0-only"
 PR = "r0"
 
-S = "${WORKDIR}/git"
-
 inherit pkgconfig cmake  systemd
 
 SYSTEMD_SERVICE:${PN} = "displbe.service"

@@ -12,8 +12,6 @@ SRC_URI = " \
     "
 SRCREV = "60d616ad3abd925956207b9b6ff981afa004e792"
 
-S = "${WORKDIR}/git"
-
 inherit cmake pkgconfig
 
 EXTRA_OECMAKE := "-DWITH_ILM_INPUT=1"

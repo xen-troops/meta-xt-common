@@ -9,5 +9,3 @@ SRC_URI = "${KERNEL_URL};branch=${BRANCH};protocol=https"
 
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
-
-S = "${WORKDIR}/git"
