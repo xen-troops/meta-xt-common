@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:append := "${THISDIR}/files:"
 
-PR="r2"
+PR = "r2"
 
 SRC_URI:append = " \
     file://system.pa \
