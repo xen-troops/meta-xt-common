@@ -16,8 +16,6 @@ SRC_URI = " \
     file://systemd-networkd-wait-online.conf \
 "
 
-S = "${WORKDIR}"
-
 inherit systemd
 
 SYSTEMD_SERVICE:${PN} = "bridge-up-notification.service"
@@ -46,19 +44,19 @@ XT_DOMA_FORWARD_DESTINATION ??= "192.168.0.4"
 do_install() {
     # Install bridge/network artifacts
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${S}/bridge-up-notification.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/bridge-up-notification.service ${D}${systemd_system_unitdir}
 
     install -d ${D}${sysconfdir}/systemd/network/
-    install -m 0644 ${S}/*.network ${D}${sysconfdir}/systemd/network
-    install -m 0644 ${S}/*.netdev ${D}${sysconfdir}/systemd/network
+    install -m 0644 ${UNPACKDIR}/*.network ${D}${sysconfdir}/systemd/network
+    install -m 0644 ${UNPACKDIR}/*.netdev ${D}${sysconfdir}/systemd/network
 
     echo "" >> ${D}${sysconfdir}/systemd/network/external.network
     echo "[Match]" >> ${D}${sysconfdir}/systemd/network/external.network
     echo "Name=${XT_DOMD_EXTERNAL_NETIF}" >> ${D}${sysconfdir}/systemd/network/external.network
 
     install -d ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d
-    install -m 0644 ${S}/xenbr0-systemd-networkd.conf ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d
-    install -m 0644 ${S}/port-forward-systemd-networkd.conf ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d
+    install -m 0644 ${UNPACKDIR}/xenbr0-systemd-networkd.conf ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d
+    install -m 0644 ${UNPACKDIR}/port-forward-systemd-networkd.conf ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d
     if ${@bb.utils.contains('XT_GUEST_INSTALL', 'domf', 'true', 'false', d)}; then
         echo "# SSH to domF" \
             >> ${D}${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf
@@ -83,6 +81,6 @@ do_install() {
     fi
 
     install -d ${D}${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d
-    install -m 0644 ${S}/systemd-networkd-wait-online.conf ${D}${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d
+    install -m 0644 ${UNPACKDIR}/systemd-networkd-wait-online.conf ${D}${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d
     echo "ExecStart=/lib/systemd/systemd-networkd-wait-online --interface=${XT_DOMD_EXTERNAL_NETIF}" >>  ${D}${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d/systemd-networkd-wait-online.conf
 }

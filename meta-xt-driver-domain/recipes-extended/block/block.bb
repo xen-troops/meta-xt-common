@@ -7,7 +7,6 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 SRC_URI = " \
     file://block-up-notification.service \
 "
-S = "${WORKDIR}"
 
 inherit systemd
 
@@ -23,5 +22,5 @@ FILES:${PN} = " \
 
 do_install() {
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${S}/block-up-notification.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/block-up-notification.service ${D}${systemd_system_unitdir}
 }

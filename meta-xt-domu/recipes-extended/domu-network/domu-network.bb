@@ -9,8 +9,6 @@ SRC_URI = " \
     file://systemd-networkd-wait-online.conf \
 "
 
-S = "${WORKDIR}"
-
 FILES:${PN} = " \
     ${sysconfdir}/systemd/network/eth0.network \
     ${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d/systemd-networkd-wait-online.conf \
@@ -20,9 +18,9 @@ RDEPENDS:${PN} = "systemd"
 
 do_install() {
     install -d ${D}${sysconfdir}/systemd/network/
-    install -m 0644 ${S}/eth0.network ${D}${sysconfdir}/systemd/network
+    install -m 0644 ${UNPACKDIR}/eth0.network ${D}${sysconfdir}/systemd/network
 
     install -d ${D}${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d
-    install -m 0644 ${S}/systemd-networkd-wait-online.conf \
+    install -m 0644 ${UNPACKDIR}/systemd-networkd-wait-online.conf \
 		${D}${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d
 }
